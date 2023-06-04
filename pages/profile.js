@@ -64,8 +64,8 @@ export default function ProfilePage() {
   const isMyUser = userId === session?.user?.id;
 
   return (
-    <Layout>
-      <UserContextProvider>
+    <>
+     
         <Card noPadding={true}>
           <div className="relative overflow-hidden rounded-md">
             <Cover url={profile?.cover} editable={isMyUser} onChange={fetchUser} />
@@ -140,7 +140,7 @@ export default function ProfilePage() {
           </div>
         </Card>
         <ProfileContent activeTab={tab} userId={userId} />
-      </UserContextProvider>
-    </Layout>
+     
+    </>
   );
 }

@@ -21,7 +21,7 @@ export default function LoginPage() {
     });
   }
   return (
-    <Layout hideNavigation={true}>
+    <>
       <div className="h-screen flex items-center">
         <div className="max-w-xs mx-auto grow -mt-24">
           <h1 className="text-6xl mb-4 text-gray-300 text-center">Login</h1>
@@ -43,6 +43,13 @@ export default function LoginPage() {
           </Card>
         </div>
       </div>
-    </Layout>
+    </>
   );
 }
+
+export function getStaticProps(){
+  return {
+    props: { nav: true}
+  }
+}
+

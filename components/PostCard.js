@@ -124,6 +124,8 @@ export default function PostCard({ id, content, created_at, photos, profiles: au
   }
 
   return (
+  
+   
     <Card>
       <div className="flex gap-3">
         <div>
@@ -201,6 +203,7 @@ export default function PostCard({ id, content, created_at, photos, profiles: au
           </ClickOutHandler>
         </div>
       </div>
+      <Link  href={`/post/${id}`}>
       <div>
         <p className="my-3 text-sm">{content}</p>
         {photos?.length > 0 && (
@@ -213,6 +216,7 @@ export default function PostCard({ id, content, created_at, photos, profiles: au
           </div>
         )}
       </div>
+      </Link>
       <div className="mt-5 flex gap-8">
         <button className="flex gap-2 items-center" onClick={toggleLike}>
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={"w-6 h-6 " + (isLikedByMe ? 'fill-red-500' : '')}>
@@ -272,5 +276,6 @@ export default function PostCard({ id, content, created_at, photos, profiles: au
         ))}
       </div>
     </Card>
+   
   );
 }

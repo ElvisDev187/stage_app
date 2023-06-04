@@ -1,43 +1,25 @@
-import Layout from "../components/Layout";
+/* eslint-disable react-hooks/exhaustive-deps */
 import PostFormCard from "../components/PostFormCard";
 import PostCard from "../components/PostCard";
-import {useSession, useSupabaseClient} from "@supabase/auth-helpers-react";
+import { useSession, useSupabaseClient } from "@supabase/auth-helpers-react";
 import LoginPage from "./login";
-import {useEffect, useState} from "react";
-import {UserContext} from "../contexts/UserContext";
+import { useEffect, useState } from "react";
+
 
 export default function Home() {
   const supabase = useSupabaseClient();
-  const session = useSession();
-  const [posts,setPosts] = useState([]);
-  const [profile,setProfile] = useState(null);
-
-  // useEffect(() => {
-   
-  // },[]);
+  const session = useSession()
+  const [posts, setPosts] = useState([]);
 
   useEffect(() => {
-    if (!session?.user?.id) {
-      return;
-    }
-    // console.log(session?.user?.id);
-    supabase.from('profiles')
-      .select()
-      .eq('id', session.user.id)
-      .then(result => {
-        // console.log(result);
-        if (result.data.length) {
-          setProfile(result.data[0]);
-        }
-      })
-      fetchPosts();
-  }, [session?.user?.id, supabase]);
+    fetchPosts();
+  }, [session?.user?.id]);
 
   function fetchPosts() {
     supabase.from('posts')
       .select('id, content, created_at, photos, profiles(id, avatar, name)')
       .is('parent', null)
-      .order('created_at', {ascending: false})
+      .order('created_at', { ascending: false })
       .then(result => {
         // console.log('posts', result);
         setPosts(result.data);
@@ -48,13 +30,19 @@ export default function Home() {
     return <LoginPage />
   }
   return (
-    <Layout>
-      <UserContext.Provider value={{profile}}>
-        <PostFormCard onPost={fetchPosts} />
-        {posts?.length > 0 && posts.map(post => (
-          <PostCard key={post.id} {...post} />
-        ))}
-      </UserContext.Provider>
-    </Layout>
+    <>
+
+      <PostFormCard onPost={fetchPosts} />
+      {posts?.length > 0 && posts.map(post => (
+        <PostCard key={post.id} {...post} />
+      ))}
+
+    </>
   )
 }
+
+// export function getStaticProps(){
+//   return {
+//     props: { nav: true}
+//   }
+// }
