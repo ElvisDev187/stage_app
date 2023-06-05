@@ -1,24 +1,28 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import Avatar from "./Avatar";
 import Card from "./Card";
 import ClickOutHandler from 'react-clickout-handler'
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import ReactTimeAgo from "react-time-ago";
 import { UserContext } from "../contexts/UserContext";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
+import { useInfiniteQuery } from "@tanstack/react-query";
+import { useIntersection } from "@mantine/hooks";
 
 export default function PostCard({ id, content, created_at, photos, profiles: authorProfile }) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [likes, setLikes] = useState([]);
-  const [comments, setComments] = useState([]);
+  const [Nbcomments, setNbComments] = useState(0);
   const [commentText, setCommentText] = useState('');
   const [isSaved, setIsSaved] = useState(false);
   const { profile: myProfile } = useContext(UserContext);
   const supabase = useSupabaseClient();
   useEffect(() => {
     fetchLikes();
-    fetchComments();
+    fectNb()
     if (myProfile?.id) fetchIsSaved();
+
   }, [myProfile?.id]);
   function fetchIsSaved() {
     supabase
@@ -38,11 +42,22 @@ export default function PostCard({ id, content, created_at, photos, profiles: au
     supabase.from('likes').select().eq('post_id', id)
       .then(result => setLikes(result.data));
   }
-  function fetchComments() {
+  function fectNb(){
     supabase.from('posts')
+      .select('*')
+      .eq('parent', id)
+      .then(res =>{
+        setNbComments(res.data.length)
+        // console.log(res);
+      })
+      
+  }
+  async function fetchComments(nextPage, pageSize) {
+    return supabase.from('posts')
       .select('*, profiles(*)')
       .eq('parent', id)
-      .then(result => setComments(result.data));
+      .order('created_at', { ascending: true })
+      .range(nextPage * pageSize, (nextPage + 1) * pageSize - 1)
   }
   function postNotification() {
     supabase.from("notifications")
@@ -85,6 +100,27 @@ export default function PostCard({ id, content, created_at, photos, profiles: au
     }
   }
 
+
+  const { data, fetchNextPage, isFetchingNextPage, hasNextPage, status } = useInfiniteQuery(
+    ['posts', `${id}`, 'comments',],
+    async ({ pageParam = 0 }) => {
+      const res = await fetchComments(pageParam, 2)
+      return res.data
+    },
+    {
+      getNextPageParam: (lastPage, allPages) => {
+        // console.log({ lastPage, allPages });
+        if (lastPage.length === 2) {
+          return allPages.length // Retourne le numéro de page suivant
+        } else {
+          return false // Indique qu'il n'y a plus de pages à récupérer
+        }
+      },
+
+    }
+  )
+
+
   const isLikedByMe = !!likes.find(like => like.user_id === myProfile?.id);
 
   function toggleLike() {
@@ -117,15 +153,29 @@ export default function PostCard({ id, content, created_at, photos, profiles: au
       })
       .then(result => {
         // console.log(result);
-        fetchComments();
+        // fetchComments();
+        fectNb()
         postNotification()
         setCommentText('');
       })
   }
 
+  const lastCommentRef = useRef(null)
+  const { ref, entry } = useIntersection({
+    root: lastCommentRef.current,
+    threshold: 1,
+  })
+
+  useEffect(() => {
+    if (entry?.isIntersecting && hasNextPage) fetchNextPage()
+  }, [entry]);
+
+  const comments = data?.pages.flatMap((page) => page)
+
+
   return (
-  
-   
+
+
     <Card>
       <div className="flex gap-3">
         <div>
@@ -203,19 +253,19 @@ export default function PostCard({ id, content, created_at, photos, profiles: au
           </ClickOutHandler>
         </div>
       </div>
-      <Link  href={`/post/${id}`}>
-      <div>
-        <p className="my-3 text-sm">{content}</p>
-        {photos?.length > 0 && (
-          <div className="flex gap-4">
-            {photos.map(photo => (
-              <div key={photo} className="">
-                <img src={photo} className="rounded-md" alt="" />
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
+      <Link href={`/post/${id}`}>
+        <div>
+          <p className="my-3 text-sm">{content}</p>
+          {photos?.length > 0 && (
+            <div className="flex gap-4">
+              {photos.map(photo => (
+                <div key={photo} className="">
+                  <img src={photo} className="rounded-md" alt="" />
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </Link>
       <div className="mt-5 flex gap-8">
         <button className="flex gap-2 items-center" onClick={toggleLike}>
@@ -228,7 +278,7 @@ export default function PostCard({ id, content, created_at, photos, profiles: au
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
             <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 12.76c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.076-4.076a1.526 1.526 0 011.037-.443 48.282 48.282 0 005.68-.494c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z" />
           </svg>
-          {comments.length}
+          {Nbcomments}
         </button>
         <button className="flex gap-2 items-center">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
@@ -256,26 +306,49 @@ export default function PostCard({ id, content, created_at, photos, profiles: au
         </div>
       </div>
       <div className="max-h-[200px] overflow-y-scroll">
-        {comments.length > 0 && comments.map(comment => (
-          <div key={comment.id} className="mt-2 flex gap-2 items-center">
-            <Avatar url={comment.profiles.avatar} />
-            <div className="bg-gray-200 py-2 px-4 rounded-3xl">
-              <div>
-                <Link href={'/profile/' + comment.profiles.id}>
-                  <span className="hover:underline font-semibold mr-1">
-                    {comment.profiles.name}
-                  </span>
-                </Link>
-                <span className="text-sm text-gray-400">
-                  <ReactTimeAgo timeStyle={'twitter'} date={(new Date(comment.created_at)).getTime()} />
-                </span>
+        {comments?.length > 0 && comments?.map((comment, i) => {
+          if (i === comments.length - 1) {
+            return (
+              <div key={comment.id} className="mt-2 flex gap-2 items-center" ref={ref}>
+                <Avatar url={comment.profiles.avatar} />
+                <div className="bg-gray-200 py-2 px-4 rounded-3xl">
+                  <div>
+                    <Link href={'/profile/' + comment.profiles.id}>
+                      <span className="hover:underline font-semibold mr-1">
+                        {comment.profiles.name}
+                      </span>
+                    </Link>
+                    <span className="text-sm text-gray-400">
+                      <ReactTimeAgo timeStyle={'twitter'} date={(new Date(comment.created_at)).getTime()} />
+                    </span>
+                  </div>
+                  <p className="text-sm">{comment.content}</p>
+                </div>
               </div>
-              <p className="text-sm">{comment.content}</p>
-            </div>
-          </div>
-        ))}
+            )
+          } else {
+            return (
+              <div key={comment.id} className="mt-2 flex gap-2 items-center">
+                <Avatar url={comment.profiles.avatar} />
+                <div className="bg-gray-200 py-2 px-4 rounded-3xl">
+                  <div>
+                    <Link href={'/profile/' + comment.profiles.id}>
+                      <span className="hover:underline font-semibold mr-1">
+                        {comment.profiles.name}
+                      </span>
+                    </Link>
+                    <span className="text-sm text-gray-400">
+                      <ReactTimeAgo timeStyle={'twitter'} date={(new Date(comment.created_at)).getTime()} />
+                    </span>
+                  </div>
+                  <p className="text-sm">{comment.content}</p>
+                </div>
+              </div>
+            )
+          }
+        })}
       </div>
     </Card>
-   
+
   );
 }

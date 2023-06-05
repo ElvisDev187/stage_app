@@ -23,24 +23,19 @@ export default function Home() {
 
   }
 
-  const { data: posts, fetchNextPage, isFetchingNextPage, hasNextPage, status } = useInfiniteQuery(
+  const { data: posts, fetchNextPage: NextPost, isFetchingNextPage, hasNextPage, status } = useInfiniteQuery(
     ['posts'],
     async ({ pageParam = 0 }) => {
       const res = await fetchPosts(pageParam, 2)
-      console.log(res);
-      if (res.data.length > 0) {
-        return res.data
-      } else {
-        return []
-      }
+     return res.data
     },
     {
       getNextPageParam: (lastPage, allPages) => {
-        console.log({ lastPage, allPages });
-        if (lastPage.length === 2) {
+        // console.log({ lastPage, allPages });
+        if (lastPage?.length === 2) {
           return allPages.length // Retourne le numéro de page suivant
         } else {
-          return false // Indique qu'il n'y a plus de pages à récupérer
+          return null // Indique qu'il n'y a plus de pages à récupérer
         }
       },
 
@@ -48,14 +43,14 @@ export default function Home() {
   )
 
   const lastPostRef = useRef(null)
-  const { ref, entry } = useIntersection({
+  const { ref, entry: PostEntry } = useIntersection({
     root: lastPostRef.current,
-    threshold: 1,
+    threshold: 1.0,
   })
 
   useEffect(() => {
-    if (entry?.isIntersecting) fetchNextPage()
-  }, [entry]);
+    if (PostEntry?.isIntersecting && hasNextPage) NextPost()
+  }, [PostEntry]);
 
   const _posts = posts?.pages.flatMap((page) => page)
 
@@ -70,15 +65,18 @@ export default function Home() {
 
       <PostFormCard onPost={fetchPosts} />
       {_posts.map((post, i) => {
-        if (i === _posts.length - 1) {
+        // console.log(_posts.length,i+1);
+        if (i + 1 === _posts.length) {
           return (
             <div key={post.id} ref={ref}>
+              {/* {i+1} */}
               <PostCard key={post.id} {...post} />
             </div>
           )
         } else {
           return (
             <div key={post.id}>
+              {/* {i+1} */}
               <PostCard key={post.id} {...post} />
             </div>
           )
