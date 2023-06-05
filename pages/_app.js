@@ -6,27 +6,26 @@ import TimeAgo from 'javascript-time-ago'
 
 import en from 'javascript-time-ago/locale/en.json';
 import Layout from '../components/Layout';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
 TimeAgo.addDefaultLocale(en);
 
 function MyApp({ Component, pageProps }) {
   const [supabaseClient] = useState(() => createBrowserSupabaseClient());
-  // const [nav, setNav] =  useState(null)
-  // useEffect(()=>{
-  //   if(pageProps.nav == true){
-  //     setNav(true)
-  //   }else{
-  //     setNav(false)
-  //   }
-  // },[pageProps])
   const nav = (!!pageProps.nav)
+  const client = new QueryClient()
   return (
     <SessionContextProvider
       supabaseClient={supabaseClient}
       initialSession={pageProps.initialSession}
-    >   <Layout hideNavigation={nav}>
-        <Component {...pageProps} />
-      </Layout>
+    >
+      <QueryClientProvider client={client}>
+        <Layout hideNavigation={nav}>
+          <Component {...pageProps} />
+        </Layout>
+        <ReactQueryDevtools initialIsOpen={false}/>
+      </QueryClientProvider>
     </SessionContextProvider>
   );
   //return <Component {...pageProps} />
