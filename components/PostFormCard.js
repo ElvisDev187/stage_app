@@ -29,6 +29,7 @@ export default function PostFormCard({onPost}) {
     });
   }
 
+  
   async function addPhotos(ev) {
     const files = ev.target.files;
     if (files.length > 0) {
