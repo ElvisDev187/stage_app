@@ -12,6 +12,7 @@ import { useIntersection } from "@mantine/hooks";
 
 export default function PostCard({ id, content, created_at, photos, profiles: authorProfile }) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [commentOpen, setCommentOpen] = useState(false);
   const [likes, setLikes] = useState([]);
   const [Nbcomments, setNbComments] = useState(0);
   const [commentText, setCommentText] = useState('');
@@ -74,9 +75,17 @@ export default function PostCard({ id, content, created_at, photos, profiles: au
     e.stopPropagation();
     setDropdownOpen(true);
   }
+  function openComment(e) {
+    e.stopPropagation();
+    setCommentOpen(true);
+  }
   function handleClickOutsideDropdown(e) {
     e.stopPropagation();
     setDropdownOpen(false);
+  }
+  function handleCloseComment(e){
+    e.stopPropagation();
+    setCommentOpen(false);
   }
   function toggleSave() {
     if (isSaved) {
@@ -155,6 +164,7 @@ export default function PostCard({ id, content, created_at, photos, profiles: au
         // console.log(result);
         // fetchComments();
         fectNb()
+        setCommentOpen(true)
         postNotification()
         setCommentText('');
       })
@@ -274,7 +284,7 @@ export default function PostCard({ id, content, created_at, photos, profiles: au
           </svg>
           {likes?.length}
         </button>
-        <button className="flex gap-2 items-center">
+        <button className="flex gap-2 items-center" onClick={openComment}>
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
             <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 12.76c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.076-4.076a1.526 1.526 0 011.037-.443 48.282 48.282 0 005.68-.494c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z" />
           </svg>
@@ -305,8 +315,9 @@ export default function PostCard({ id, content, created_at, photos, profiles: au
           </button>
         </div>
       </div>
-      <div className="max-h-[200px] overflow-y-scroll">
-        {comments?.length > 0 && comments?.map((comment, i) => {
+      <ClickOutHandler onClickOut={handleCloseComment}>
+      <div className="max-h-[200px] overflow-y-scroll mt-3">
+        {(comments?.length > 0 && commentOpen) && comments?.map((comment, i) => {
           if (i === comments.length - 1) {
             return (
               <div key={comment.id} className="mt-2 flex gap-2 items-center" ref={ref}>
@@ -348,6 +359,7 @@ export default function PostCard({ id, content, created_at, photos, profiles: au
           }
         })}
       </div>
+      </ClickOutHandler>
     </Card>
 
   );

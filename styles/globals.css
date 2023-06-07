@@ -2,7 +2,24 @@
 @tailwind components;
 @tailwind utilities;
 
-body{
+body {
     background-color: #F5F7FB;
-    color:#333;
+/* 
+    background: rgb(231, 230, 251);
+    background: linear-gradient(11deg, rgba(231, 230, 251, 1) 0%, rgba(0, 148, 232, 1) 60%); */
+    color: #333;
+}
+
+  /* Couleur de la poignée de la scrollbar au survol */
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: #2b75ff;
+  }
+
+  
+.App .EmojiPickerReact {
+  --epr-picker-height: 500px;
+}
+
+.show-emoji {
+  padding-bottom: 15px;
 }

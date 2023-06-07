@@ -4,14 +4,14 @@ import PostCard from "../components/PostCard";
 import { useSession, useSupabaseClient } from "@supabase/auth-helpers-react";
 import LoginPage from "./login";
 import { useEffect, useRef } from "react";
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
 import { useIntersection } from "@mantine/hooks";
 
 
 export default function Home() {
   const supabase = useSupabaseClient();
   const session = useSession()
-
+  const client = useQueryClient()
 
 
   async function fetchPosts(nextPage, pageSize) {
@@ -42,6 +42,10 @@ export default function Home() {
     }
   )
 
+  const afterPost= async()=>{
+     await client.invalidateQueries("posts")
+  }
+
   const lastPostRef = useRef(null)
   const { ref, entry: PostEntry } = useIntersection({
     root: lastPostRef.current,
@@ -63,7 +67,8 @@ export default function Home() {
   return (
     <>
 
-      <PostFormCard onPost={fetchPosts} />
+      <PostFormCard onPost={afterPost} />
+      <div className="max-h-[75vh] overflow-y-scroll">
       {_posts.map((post, i) => {
         // console.log(_posts.length,i+1);
         if (i + 1 === _posts.length) {
@@ -83,6 +88,7 @@ export default function Home() {
         }
 
       })}
+      </div>
       <div>
         {isFetchingNextPage && 'Loading more...'}
       </div>

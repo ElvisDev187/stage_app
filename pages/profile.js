@@ -10,7 +10,7 @@ import {useSession, useSupabaseClient} from "@supabase/auth-helpers-react";
 import Cover from "../components/Cover";
 import ProfileTabs from "../components/ProfileTabs";
 import ProfileContent from "../components/ProfileContent";
-import {UserContextProvider} from "../contexts/UserContext";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function ProfilePage() {
   const [profile,setProfile] = useState(null);
@@ -23,12 +23,12 @@ export default function ProfilePage() {
   const userId = router.query.id;
 
   const supabase = useSupabaseClient();
-
+  const client = useQueryClient()
   useEffect(() => {
     if (!userId) {
       return;
     }
-    fetchUser();
+    fetchUser(false);
   }, [userId]);
 
   function fetchUser() {
@@ -41,8 +41,10 @@ export default function ProfilePage() {
         }
         if (result.data) {
           setProfile(result.data[0]);
+         
         }
       });
+      
   }
 
   function saveProfile() {
