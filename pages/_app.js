@@ -14,14 +14,22 @@ TimeAgo.addDefaultLocale(en);
 function MyApp({ Component, pageProps }) {
   const [supabaseClient] = useState(() => createBrowserSupabaseClient());
   const nav = (!!pageProps.nav)
-  const client = new QueryClient()
+  const back = (!!pageProps.back)
+  const client = new QueryClient({
+    defaultOptions:{
+      queries: {
+      staleTime: 1000 * 60 * 2,
+      keepPreviousData: true
+    }
+    }
+  })
   return (
     <SessionContextProvider
       supabaseClient={supabaseClient}
       initialSession={pageProps.initialSession}
     >
       <QueryClientProvider client={client}>
-        <Layout hideNavigation={nav}>
+        <Layout hideNavigation={nav} back={back}>
           <Component {...pageProps} />
         </Layout>
         <ReactQueryDevtools initialIsOpen={false}/>

@@ -2,6 +2,7 @@ import {uploadUserProfileImage} from "../helpers/user";
 import {useSession, useSupabaseClient} from "@supabase/auth-helpers-react";
 import {useState} from "react";
 import Preloader from "./Preloader";
+import Image from "next/image";
 
 export default function Avatar({size,url,editable,onChange}) {
   const supabase = useSupabaseClient();
@@ -20,10 +21,11 @@ export default function Avatar({size,url,editable,onChange}) {
   if (size === 'lg') {
     width = 'w-24 md:w-36';
   }
+
   return (
     <div className={`${width} relative `}>
-      <div className={`rounded-full overflow-hidden ${size? "w-24 h-24 md:h-36 md:w-36": "w-12 h-12"}`}>
-        <img src={url} alt="" className="w-full h-full"/>
+      <div className={`rounded-full overflow-hidden flex justify-center items-center relative ${size? "w-24 h-24 md:h-36 md:w-36": "w-12 h-12"}`}>
+        <Image src={url} alt="" fill loading="lazy" placeholder="blur" blurDataURL="/white.jpg" className="w-full h-full"/>
       </div>
       {isUploading && (
         <div className="absolute inset-0 flex items-center bg-white bg-opacity-50 rounded-full">

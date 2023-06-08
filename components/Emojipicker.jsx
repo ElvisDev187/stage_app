@@ -18,12 +18,13 @@ export default function EmojiPickerComponent() {
 //     setSelectedEmoji(emojiData.unified);
 //   }
 
+
 function onClick(emojiData, event) {
     setSelectedEmoji(emojiData.unified);
   }
   return (
     <div className="App">
-      <h2>Emoji Picker React 4 Demo</h2>
+      {/* <h2>Emoji Picker React 4 Demo</h2>
       <div className="show-emoji">
         Your selected Emoji is:
         {selectedEmoji ? (
@@ -33,7 +34,7 @@ function onClick(emojiData, event) {
             size={30}
           />
         ) : null}
-      </div>
+      </div> */}
 
       <EmojiPicker
         onEmojiClick={onClick}

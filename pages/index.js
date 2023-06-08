@@ -23,7 +23,7 @@ export default function Home() {
 
   }
 
-  const { data: posts, fetchNextPage: NextPost, isFetchingNextPage, hasNextPage, status } = useInfiniteQuery(
+  const { data: posts, fetchNextPage: NextPost, isFetchingNextPage, hasNextPage, isLoading, isRefetching } = useInfiniteQuery(
     ['posts'],
     async ({ pageParam = 0 }) => {
       const res = await fetchPosts(pageParam, 2)
@@ -58,10 +58,8 @@ export default function Home() {
 
   const _posts = posts?.pages.flatMap((page) => page)
 
-  if (!session) {
-    return <LoginPage />
-  }
-  if (status === "loading") {
+
+  if (isLoading || isRefetching) {
     return <h1>Loading...</h1>
   }
   return (

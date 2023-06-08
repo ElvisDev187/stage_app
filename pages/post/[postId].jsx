@@ -45,7 +45,8 @@ export async function getStaticProps(ctx){
   return {
     props: {
       post: data[0],
-      nav: true
+      nav: true,
+      back: true
     }
   }
 

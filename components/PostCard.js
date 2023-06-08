@@ -10,8 +10,9 @@ import { UserContext } from "../contexts/UserContext";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useIntersection } from "@mantine/hooks";
+import Image from "next/image";
 
-export default function PostCard({ id, content, created_at, photos, profiles: authorProfile }) {
+export default function PostCard({ id, content, created_at, photos, profiles: authorProfile, shared }) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [commentOpen, setCommentOpen] = useState(false);
   const [likes, setLikes] = useState([]);
@@ -155,7 +156,10 @@ export default function PostCard({ id, content, created_at, photos, profiles: au
 
   async function CommentPhoto(ev) {
     const file = ev.target.files[0];
-    const newName = Date.now() + file.name;
+    if(!file){
+      return;
+    }
+    const newName = Date.now().toString();
     const result = await supabase
       .storage
       .from('photos')
@@ -200,6 +204,18 @@ export default function PostCard({ id, content, created_at, photos, profiles: au
         }
         setCommentText('');
       })
+  }
+
+ function addTorepport(postid){
+    supabase.from("reports")
+    .insert({
+      post_id: postid,
+      user_id: myProfile?.id,
+    }).then(res=>{
+      if(!res.error){
+        // confirmation message
+      }
+    })
   }
 
   const lastCommentRef = useRef(null)
@@ -283,12 +299,17 @@ export default function PostCard({ id, content, created_at, photos, profiles: au
                       <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
                     </svg>
                     Delete</a>
-                  <a href="" className="flex gap-3 py-2 my-2 hover:bg-socialBlue hover:text-white -mx-4 px-4 rounded-md transition-all hover:scale-110 hover:shadow-md shadow-gray-300">
+                  <span onClick={()=>{
+                     const res = confirm("Voulez vous vraiment signaler ce poste?")
+                    if (res) {
+                      addTorepport(id)
+                    }
+                  }} className="flex cursor-pointer gap-3 py-2 my-2 hover:bg-socialBlue hover:text-white -mx-4 px-4 rounded-md transition-all hover:scale-110 hover:shadow-md shadow-gray-300">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
                     </svg>
                     Report
-                  </a>
+                  </span>
                 </div>
               )}
             </div>
@@ -301,8 +322,8 @@ export default function PostCard({ id, content, created_at, photos, profiles: au
           {photos?.length > 0 && (
             <div className="flex gap-4">
               {photos.map(photo => (
-                <div key={photo} className="">
-                  <img src={photo} className="rounded-md" alt="" />
+                <div key={photo} className="flex w-full min-h-[200px] justify-center items-center relative">
+                  <Image src={photo} sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" fill loading="lazy" placeholder="blur" blurDataURL="/white.jpg" className="rounded-md" alt="" />
                 </div>
               ))}
             </div>
@@ -322,33 +343,34 @@ export default function PostCard({ id, content, created_at, photos, profiles: au
           </svg>
           {Nbcomments}
         </button>
-        <button className="flex gap-2 items-center">
+        {/* <button className="flex gap-2 items-center">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
             <path strokeLinecap="round" strokeLinejoin="round" d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0 0a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0-12.814a2.25 2.25 0 103.933-2.185 2.25 2.25 0 00-3.933 2.185z" />
           </svg>
-          4
-        </button>
-      </div>
-      <div className="flex mt-4 gap-3 z-0">
-        <div>
-          <Avatar url={myProfile?.avatar} />
-        </div>
-        <div className="border grow rounded-full relative z-0">
-          <form onSubmit={postComment}>
-            <input
-              value={commentText}
-              onChange={ev => setCommentText(ev.target.value)}
-              className="block w-full p-3 px-4 overflow-hidden h-12 rounded-full z-0" placeholder="Leave a comment" />
-          </form>
-          <label className="absolute top-3 right-3 text-gray-400">
-            <input type="file" className="hidden" onChange={CommentPhoto} />
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
-            </svg>
-          </label>
-        </div>
+          {shared}
+        </button> */}
       </div>
       <ClickOutHandler onClickOut={handleCloseComment}>
+        <div className="flex mt-4 gap-3 z-0">
+          <div>
+            <Avatar url={myProfile?.avatar} />
+          </div>
+          <div className="border grow rounded-full relative z-0">
+            <form onSubmit={postComment}>
+              <input
+                value={commentText}
+                onChange={ev => setCommentText(ev.target.value)}
+                className="block w-full p-3 px-4 overflow-hidden h-12 rounded-full z-0" placeholder="Leave a comment" />
+            </form>
+            <label className="absolute top-3 right-3 text-gray-400">
+              <input type="file" className="hidden" onChange={CommentPhoto} />
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+              </svg>
+            </label>
+          </div>
+        </div>
+
         <div className="max-h-[200px] overflow-y-scroll mt-3">
           {(comments?.length > 0 && commentOpen) && comments?.map((comment, i) => {
             if (i === comments.length - 1) {
@@ -369,7 +391,7 @@ export default function PostCard({ id, content, created_at, photos, profiles: au
                     <p className="text-sm">{comment.content}</p>
                     {comment?.photos?.length > 0 && (
                       <div className="w-[150px] h-[100px] flex items-center justify-center rounded-md overflow-hidden mb-1">
-                        <img className="w-full h-full" src={comment?.photos[0]} alt={comment.content} />
+                        <Image className="" fill loading="lazy" placeholder="blur" blurDataURL="../public/white.jpg" src={comment?.photos[0]} alt={comment.content} />
                       </div>
                     )}
                   </div>
