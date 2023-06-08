@@ -3,6 +3,7 @@ import {useState} from "react";
 import Preloader from "./Preloader";
 import {uploadUserProfileImage} from "../helpers/user";
 import Image from "next/image";
+import { LazyLoadImage } from "react-lazy-load-image-component";
 
 export default function Cover({url,editable,onChange}) {
   const supabase = useSupabaseClient();
@@ -21,7 +22,8 @@ export default function Cover({url,editable,onChange}) {
   return (
     <div className="h-36 overflow-hidden flex justify-center items-center relative">
       <div>
-        <Image fill  placeholder="blur" blurDataURL="/white.jpg" quality={100} loading="lazy"  src={url} alt=""/>
+      <LazyLoadImage effect="blur" src={url} alt="photoPost" className="w-full h-ull" />
+        {/* <Image fill  placeholder="blur" blurDataURL="/white.jpg" quality={100} loading="lazy"  src={url} alt=""/> */}
       </div>
       {isUploading && (
         <div className="absolute inset-0 bg-white bg-opacity-80 flex items-center z-10">

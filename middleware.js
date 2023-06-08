@@ -7,20 +7,20 @@ import { supabase } from './lib/supabase';
  * @returns 
  */
 const middleware = async (request) => {
-   console.log(request.url);
+  
   // Get the cookie from the request
   const access_token = request.cookies.get("supabase-auth-token");
-   console.log({access_token});
+
   // If the cookie is not set, redirect to the login page
   if (!access_token) {
     return NextResponse.redirect(`${process.env.NextURL}/login`);
   }
 
   const data = JSON.parse(access_token.value)
- console.log(data);
+
   // If the cookie is set, make sure the JWT is valid
   const { data: user, error } = await supabase.auth.getUser(data[0]);
-   console.log({user, data});
+ 
   // If the JWT is not valid, redirect to the login page
   if (error || !user) {
     // Here we MUST wipe the access token as well. Otherwise the user will be stuck in a redirect loop.

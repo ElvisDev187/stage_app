@@ -3,6 +3,7 @@ import {useSession, useSupabaseClient} from "@supabase/auth-helpers-react";
 import {useState} from "react";
 import Preloader from "./Preloader";
 import Image from "next/image";
+import { LazyLoadImage } from "react-lazy-load-image-component";
 
 export default function Avatar({size,url,editable,onChange}) {
   const supabase = useSupabaseClient();
@@ -25,7 +26,8 @@ export default function Avatar({size,url,editable,onChange}) {
   return (
     <div className={`${width} relative `}>
       <div className={`rounded-full overflow-hidden flex justify-center items-center relative ${size? "w-24 h-24 md:h-36 md:w-36": "w-12 h-12"}`}>
-        <Image src={url} alt="" fill loading="lazy" placeholder="blur" blurDataURL="/white.jpg" className="w-full h-full"/>
+        {/* <Image src={url} alt="" fill loading="lazy" placeholder="blur" blurDataURL="/white.jpg" className="w-full h-full"/> */}
+        <LazyLoadImage effect="blur" src={url} alt="photoPost" className="w-full h-ull" />
       </div>
       {isUploading && (
         <div className="absolute inset-0 flex items-center bg-white bg-opacity-50 rounded-full">

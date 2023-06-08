@@ -1,25 +1,50 @@
 import Layout from "../components/Layout";
 import Card from "../components/Card";
 import Link from "next/link";
-import {useSupabaseClient} from "@supabase/auth-helpers-react";
+import {useSession, useSupabaseClient} from "@supabase/auth-helpers-react";
+import { NextResponse } from "next/server";
+import { useRouter } from "next/router";
+import { useEffect } from "react";
 
-export default function LoginPage() {
+
+export default  function LoginPage() {
+
+
   const supabase = useSupabaseClient();
+  const router = useRouter()
   async function loginWithGoogle() {
     await supabase.auth.signInWithOAuth({
       provider: 'google',
+      options: {
+        redirectTo: "/"
+      }
     });
   }
   async function loginWithFacebook() {
     await supabase.auth.signInWithOAuth({
       provider: 'facebook',
+      options: {
+        redirectTo: "/"
+      }
     });
   }
   async function loginWithGithub() {
     await supabase.auth.signInWithOAuth({
       provider: 'github',
+      options: {
+        redirectTo: "/"
+      }
     });
   }
+
+  const session = useSession()
+
+ 
+  useEffect(()=>{
+    if (!session) {
+      router.replace("/")
+    }
+  })
   return (
     <>
       <div className="h-screen flex items-center">
@@ -52,4 +77,5 @@ export function getStaticProps(){
     props: { nav: true}
   }
 }
+
 

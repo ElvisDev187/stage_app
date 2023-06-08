@@ -11,6 +11,7 @@ import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useIntersection } from "@mantine/hooks";
 import Image from "next/image";
+import { LazyLoadImage} from "react-lazy-load-image-component";
 
 export default function PostCard({ id, content, created_at, photos, profiles: authorProfile, shared }) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -320,10 +321,11 @@ export default function PostCard({ id, content, created_at, photos, profiles: au
         <div>
           <p className="my-3 text-sm">{content}</p>
           {photos?.length > 0 && (
-            <div className="flex gap-4">
+            <div className="flex gap-3">
               {photos.map(photo => (
                 <div key={photo} className="flex w-full min-h-[200px] justify-center items-center relative">
-                  <Image src={photo} sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" fill loading="lazy" placeholder="blur" blurDataURL="/white.jpg" className="rounded-md" alt="" />
+                  <LazyLoadImage effect="blur" src={photo} alt="photoPost" className="w-full h-ull rounded-sm" />
+                  {/* <Image src={photo} sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" fill loading="lazy" placeholder="blur" blurDataURL="/white.jpg" className="rounded-md" alt="" /> */}
                 </div>
               ))}
             </div>
