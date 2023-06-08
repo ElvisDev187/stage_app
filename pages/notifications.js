@@ -85,7 +85,7 @@ export default function NotificationsPage() {
 
 
   return (
-    <>
+    <Layout hideNavigation={false}>
       <h1 className="text-6xl mb-4 text-gray-300">Notifications</h1>
       <Card noPadding={true}>
         <div className="">
@@ -112,6 +112,6 @@ export default function NotificationsPage() {
           ))}
         </div>
       </Card>
-    </>
+    </Layout>
   );
 }

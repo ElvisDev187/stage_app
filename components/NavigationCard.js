@@ -15,6 +15,7 @@ export default function NavigationCard() {
   const supabase = useSupabaseClient();
   async function logout() {
     await supabase.auth.signOut();
+    router.push('/login')
   }
 
   return (
@@ -46,7 +47,7 @@ export default function NavigationCard() {
           </svg>
           <span className="hidden md:block ">Notifications</span>
           {notifNumber > 0 && (
-            <span className="hidden md:block px-2 py-1 rounded-full bg-red-600 text-white text-sm font-semibold">{notifNumber || ""}</span>
+            <span className="hidden md:flex items-center justify-center w-[25px] h-[25px] p-1 rounded-full bg-red-600 text-white text-sm font-semibold">{notifNumber || ""}</span>
           )}
         </Link>
         <button onClick={logout} className="w-full -my-2">

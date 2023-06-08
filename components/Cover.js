@@ -22,7 +22,7 @@ export default function Cover({url,editable,onChange}) {
   return (
     <div className="h-36 overflow-hidden flex justify-center items-center relative">
       <div>
-      <LazyLoadImage effect="blur" src={url} alt="photoPost" className="w-full h-ull" />
+      <LazyLoadImage effect="blur" src={url} alt="photoPost" className="w-full h-ull object-fill" />
         {/* <Image fill  placeholder="blur" blurDataURL="/white.jpg" quality={100} loading="lazy"  src={url} alt=""/> */}
       </div>
       {isUploading && (

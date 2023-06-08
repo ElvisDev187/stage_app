@@ -66,7 +66,7 @@ export default function ProfilePage() {
   const isMyUser = userId === session?.user?.id;
 
   return (
-    <>
+    <Layout hideNavigation={false} >
      
         <Card noPadding={true}>
           <div className="relative overflow-hidden rounded-md">
@@ -143,6 +143,6 @@ export default function ProfilePage() {
         </Card>
         <ProfileContent activeTab={tab} userId={userId} />
      
-    </>
+    </Layout>
   );
 }

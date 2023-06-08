@@ -41,5 +41,5 @@ const middleware = async (request) => {
 export default middleware;
 
 export const config = {
-  matcher: ["/"], // This is the path we want to protect
+  matcher: ["/","/notifications","/profile/:path*","/post/:path*"], // This is the path we want to protect
 };

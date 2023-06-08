@@ -6,6 +6,7 @@ import LoginPage from "./login";
 import { useEffect, useRef } from "react";
 import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
 import { useIntersection } from "@mantine/hooks";
+import Layout from "../components/Layout";
 
 
 export default function Home() {
@@ -63,7 +64,7 @@ export default function Home() {
     return <h1>Loading...</h1>
   }
   return (
-    <>
+    <Layout hideNavigation={false}>
 
       <PostFormCard onPost={afterPost} />
       <div className="max-h-[75vh] overflow-y-scroll">
@@ -91,7 +92,7 @@ export default function Home() {
         {isFetchingNextPage && 'Loading more...'}
       </div>
 
-    </>
+    </Layout>
   )
 }
 

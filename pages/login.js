@@ -14,17 +14,14 @@ export default  function LoginPage() {
   const router = useRouter()
   async function loginWithGoogle() {
     await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: "/"
-      }
+      provider: 'google'
     });
   }
   async function loginWithFacebook() {
     await supabase.auth.signInWithOAuth({
       provider: 'facebook',
       options: {
-        redirectTo: "/"
+        redirectTo: process.env.NextURL
       }
     });
   }
@@ -32,7 +29,7 @@ export default  function LoginPage() {
     await supabase.auth.signInWithOAuth({
       provider: 'github',
       options: {
-        redirectTo: "/"
+        redirectTo: process.env.NextURL
       }
     });
   }
@@ -42,11 +39,11 @@ export default  function LoginPage() {
  
   useEffect(()=>{
     if (!session) {
-      router.replace("/")
+      router.push('/')
     }
-  })
+  },[session?.user])
   return (
-    <>
+    <Layout hideNavigation={true}>
       <div className="h-screen flex items-center">
         <div className="max-w-xs mx-auto grow -mt-24">
           <h1 className="text-6xl mb-4 text-gray-300 text-center">Login</h1>
@@ -68,14 +65,9 @@ export default  function LoginPage() {
           </Card>
         </div>
       </div>
-    </>
+    </Layout>
   );
 }
 
-export function getStaticProps(){
-  return {
-    props: { nav: true}
-  }
-}
 
 

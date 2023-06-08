@@ -8,9 +8,9 @@ import { createClient } from '@supabase/supabase-js'
 const PostDetailPage = ({post}) => {
 
   return ( 
-    <>
+    <Layout hideNavigation={true} back={true}>
       <PostCard {...post}/>
-    </>
+    </Layout>
   )
 }
 
