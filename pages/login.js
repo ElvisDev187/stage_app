@@ -7,7 +7,7 @@ import { useRouter } from "next/router";
 import { useEffect } from "react";
 
 
-export default  function LoginPage() {
+export default  function LoginPage(props) {
 
 
   const supabase = useSupabaseClient();
