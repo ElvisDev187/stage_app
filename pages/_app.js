@@ -15,20 +15,23 @@ TimeAgo.addDefaultLocale(en);
 
 function MyApp({ Component, pageProps }) {
   const [supabaseClient] = useState(() => createBrowserSupabaseClient());
-  const client = new QueryClient({
+  const [queryClient] = useState(()=> new QueryClient({
     defaultOptions: {
       queries: {
         staleTime: 1000 * 60 * 2,
-        keepPreviousData: true
+        keepPreviousData: false,
+        refetchOnWindowFocus: true,
+        refetchOnMount: true
       }
     }
-  })
+  }))
+ 
   return (
     <SessionContextProvider
       supabaseClient={supabaseClient}
       initialSession={pageProps.initialSession}
     >
-      <QueryClientProvider client={client}>
+      <QueryClientProvider client={queryClient}>
         <UserContextProvider>
           <Component {...pageProps} />
         </UserContextProvider>

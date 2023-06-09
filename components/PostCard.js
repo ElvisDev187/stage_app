@@ -8,12 +8,14 @@ import Link from "next/link";
 import ReactTimeAgo from "react-time-ago";
 import { UserContext } from "../contexts/UserContext";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
 import { useIntersection } from "@mantine/hooks";
 import Image from "next/image";
 import { LazyLoadImage} from "react-lazy-load-image-component";
+import {  ShimmerThumbnail } from "react-shimmer-effects";
 
-export default function PostCard({ id, content, created_at, photos, profiles: authorProfile, shared }) {
+
+export default function PostCard({ id, content, created_at, photos, profiles: authorProfile }) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [commentOpen, setCommentOpen] = useState(false);
   const [likes, setLikes] = useState([]);
@@ -22,6 +24,7 @@ export default function PostCard({ id, content, created_at, photos, profiles: au
   const [isSaved, setIsSaved] = useState(false);
   const { profile: myProfile } = useContext(UserContext);
   const supabase = useSupabaseClient();
+  const client = useQueryClient()
   useEffect(() => {
     fetchLikes();
     fectNb()
@@ -90,7 +93,7 @@ export default function PostCard({ id, content, created_at, photos, profiles: au
     e.stopPropagation();
     setCommentOpen(false);
   }
-  function toggleSave() {
+ async function toggleSave() {
     if (isSaved) {
       supabase.from('saved_posts')
         .delete()
@@ -110,6 +113,7 @@ export default function PostCard({ id, content, created_at, photos, profiles: au
         setDropdownOpen(false);
       });
     }
+   await client.invalidateQueries(["savedposts"])
   }
 
 
@@ -240,15 +244,15 @@ export default function PostCard({ id, content, created_at, photos, profiles: au
         <div>
           <Link href={'/profile'}>
             <span className="cursor-pointer">
-              <Avatar url={authorProfile.avatar} />
+              <Avatar url={authorProfile?.avatar} />
             </span>
           </Link>
         </div>
         <div className="grow">
           <p>
-            <Link href={'/profile/' + authorProfile.id}>
+            <Link href={'/profile/' + authorProfile?.id}>
               <span className="mr-1 font-semibold cursor-pointer hover:underline">
-                {authorProfile.name}
+                {authorProfile?.name}
               </span>
             </Link>
             shared a post
@@ -324,7 +328,7 @@ export default function PostCard({ id, content, created_at, photos, profiles: au
             <div className="flex gap-3">
               {photos.map(photo => (
                 <div key={photo} className="flex w-full min-h-[200px] justify-center items-center relative">
-                  <LazyLoadImage effect="blur" src={photo} alt="photoPost" className="w-full h-ull rounded-sm" />
+                  <LazyLoadImage effect="blur" placeholder={<ShimmerThumbnail rounded={true}/>} src={photo} alt="photoPost" className="w-full h-ull rounded-sm" />
                   {/* <Image src={photo} sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" fill loading="lazy" placeholder="blur" blurDataURL="/white.jpg" className="rounded-md" alt="" /> */}
                 </div>
               ))}

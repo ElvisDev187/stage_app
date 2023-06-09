@@ -6,10 +6,9 @@ import { useEffect, useRef, useState } from "react";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useIntersection } from "@mantine/hooks";
-
+import { ShimmerSocialPost } from "react-shimmer-effects";
 export default function ProfileContent({ activeTab, userId }) {
-  // const [posts,setPosts] = useState([]);
-  const [profile, setProfile] = useState(null);
+ 
   const supabase = useSupabaseClient();
 
 
@@ -31,7 +30,7 @@ export default function ProfileContent({ activeTab, userId }) {
   }
 
   const { data, fetchNextPage, isFetchingNextPage, hasNextPage, status } = useInfiniteQuery(
-    ['user', `${userId}`, 'posts'],
+    ["myposts"],
     async ({ pageParam = 0 }) => {
       const res = await userPosts(pageParam, 2)
       return res.data
@@ -92,7 +91,11 @@ export default function ProfileContent({ activeTab, userId }) {
             }
 
           })
-          : <h1>Loading ...</h1>
+          : <>
+          <ShimmerSocialPost type="both" />
+          <ShimmerSocialPost type="both" />
+
+        </>
         :
         null
       }

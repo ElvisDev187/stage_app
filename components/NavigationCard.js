@@ -20,7 +20,7 @@ export default function NavigationCard() {
 
   return (
     <Card noPadding={true}>
-      <div className="px-4 py-2 flex justify-between md:block shadow-md shadow-gray-500 md:shadow-none">
+      <div className="px-4 py-2 flex justify-between flex-col md:block shadow-md shadow-gray-500 md:shadow-none">
         <h2 className="text-gray-400 mb-3 hidden md:block">Navigation</h2>
         <Link href="/" className={pathname === '/' ? activeElementClasses : nonActiveElementClasses}>
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
