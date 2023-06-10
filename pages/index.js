@@ -78,14 +78,14 @@ export default function Home() {
               return (
                 <div key={post.id} ref={ref}>
                   {/* {i+1} */}
-                  <PostCard key={post.id} {...post} />
+                  <PostCard  {...post} />
                 </div>
               )
             } else {
               return (
                 <div key={post.id}>
                   {/* {i+1} */}
-                  <PostCard key={post.id} {...post} />
+                  <PostCard {...post} />
                 </div>
               )
             }
@@ -94,7 +94,7 @@ export default function Home() {
         }
       </div>
       <div>
-        {isFetchingNextPage && <ShimmerSocialPost type="both" />}
+        {/* {isFetchingNextPage && <ShimmerSocialPost type="both" />} */}
       </div>
 
     </Layout>

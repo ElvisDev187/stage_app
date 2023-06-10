@@ -2,22 +2,16 @@
 import PostCard from "./PostCard";
 import Card from "./Card";
 import FriendInfo from "./FriendInfo";
+import Link from "next/link"
 import { useEffect, useRef, useState } from "react";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useIntersection } from "@mantine/hooks";
-import { ShimmerSocialPost } from "react-shimmer-effects";
+import { ShimmerSocialPost, ShimmerThumbnail } from "react-shimmer-effects";
+import { LazyLoadImage } from "react-lazy-load-image-component";
 export default function ProfileContent({ activeTab, userId }) {
- 
+
   const supabase = useSupabaseClient();
-
-
-  // async function loadPosts() {
-  //   const posts = await userPosts(userId);
-  //   const profile = await userProfile(userId);
-  //   setPosts(posts);
-  //   setProfile(profile);
-  // }
 
   async function userPosts(nextPage, pageSize) {
     return supabase.from('posts')
@@ -29,73 +23,108 @@ export default function ProfileContent({ activeTab, userId }) {
 
   }
 
-  const { data, fetchNextPage, isFetchingNextPage, hasNextPage, status } = useInfiniteQuery(
-    ["myposts"],
+  async function userPhotos(nextPage, pageSize) {
+    return supabase.from('posts')
+      .select('id, photos')
+      .eq('author', userId)
+      .is('parent', null)
+      .order('created_at', { ascending: false })
+      .range(nextPage * pageSize, (nextPage + 1) * pageSize - 1)
+  }
+
+  const {
+    data: photoData,
+    fetchNextPage: nextPhotos,
+    hasNextPage: hasnextPhotos,
+    status: photoStatus,
+    isFetchingNextPage: isFetchingNextPhotos } = useInfiniteQuery(
+      ["myphotos", userId],
+      async ({ pageParam = 0 }) => {
+        const res = await userPhotos(pageParam, 20)
+        const filteredPosts = res.data.filter(post => post.photos !== null && post.photos.length > 0);
+        return filteredPosts
+      },
+      {
+        enabled: !!userId && activeTab === "photos",
+        getNextPageParam: (lastPage, allPages) => {
+          // console.log({ lastPage, allPages });
+          const lastpost = lastPage[lastPage?.length - 1] || null
+          return lastpost?.id
+        }
+
+      }
+    )
+
+  const { data: postData, fetchNextPage: nextPosts, isFetchingNextPage, hasNextPage, status } = useInfiniteQuery(
+    ["myposts", userId],
     async ({ pageParam = 0 }) => {
-      const res = await userPosts(pageParam, 2)
+      const res = await userPosts(pageParam, 3)
       return res.data
     },
     {
       getNextPageParam: (lastPage, allPages) => {
         // console.log({ lastPage, allPages });
-        if (lastPage.length === 2) {
+        if (lastPage.length === 3) {
           return allPages.length // Retourne le numéro de page suivant
         } else {
           return false // Indique qu'il n'y a plus de pages à récupérer
         }
       },
+      enabled: activeTab === "posts"
 
     }
   )
 
   const lastPostRef = useRef(null)
-  const { ref, entry } = useIntersection({
+  const { ref: postref, entry: postEntry } = useIntersection({
     root: lastPostRef.current,
     threshold: 1,
   })
 
+
+
   useEffect(() => {
     if (activeTab === 'posts') {
-      if (entry?.isIntersecting && hasNextPage) fetchNextPage()
+      if (postEntry?.isIntersecting && hasNextPage) nextPosts()
     }
-  }, [entry, activeTab]);
-
-  const posts = data?.pages.flatMap((page) => page)
+  }, [postEntry, activeTab]);
 
 
-  // async function userProfile(userId) {
-  //   const {data} = await supabase.from('profiles')
-  //     .select()
-  //     .eq('id', userId);
-  //   return data?.[0];
-  // }
+
+  const posts = postData?.pages.flatMap((page) => page)
+  const postPhotos = photoData?.pages.flatMap((page) => page)
+  console.log({ postPhotos, photoStatus });
 
   return (
     <div>
       {activeTab === 'posts' ?
 
         status === "success" ?
-          posts?.map((post, i) => {
-            if (i === posts.length - 1) {
-              return (
-                <div key={post.id} ref={ref}>
-                  <PostCard key={post.id} {...post} />
-                </div>
-              )
-            } else {
-              return (
-                <div key={post.id}>
-                  <PostCard key={post.id} {...post} />
-                </div>
-              )
+          <div className="max-h-[60vh] overflow-y-scroll overflow-x-hidden">
+            {
+              posts?.map((post, i) => {
+                if (i === posts.length - 1) {
+                  return (
+                    <div key={post.id} ref={postref}>
+                      <PostCard {...post} />
+                    </div>
+                  )
+                } else {
+                  return (
+                    <div key={post.id}>
+                      <PostCard {...post} />
+                    </div>
+                  )
+                }
+
+              })
             }
-
-          })
-          : <>
-          <ShimmerSocialPost type="both" />
-          <ShimmerSocialPost type="both" />
-
-        </>
+          </div>
+          :
+          <>
+            <ShimmerSocialPost type="both" />
+            <ShimmerSocialPost type="both" />
+          </>
         :
         null
       }
@@ -141,23 +170,63 @@ export default function ProfileContent({ activeTab, userId }) {
       {activeTab === 'photos' && (
         <div>
           <Card>
-            <div className="grid md:grid-cols-2 gap-4">
-              <div className="rounded-md overflow-hidden h-48 flex items-center shadow-md">
-                <img src="https://images.unsplash.com/photo-1601581875039-e899893d520c?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1074&q=80" alt="" />
-              </div>
-              <div className="rounded-md overflow-hidden h-48 flex items-center shadow-md">
-                <img src="https://images.unsplash.com/photo-1563789031959-4c02bcb41319?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1074&q=80" alt="" />
-              </div>
-              <div className="rounded-md overflow-hidden h-48 flex items-center shadow-md">
-                <img src="https://images.unsplash.com/photo-1560703650-ef3e0f254ae0?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80" alt="" />
-              </div>
-              <div className="rounded-md overflow-hidden h-48 flex items-center shadow-md">
-                <img src="https://images.unsplash.com/photo-1601581874834-3b6065645e07?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1074&q=80" alt="" />
-              </div>
+            <div className="grid md:grid-cols-2 gap-4 max-h-[60vh] overflow-y-scroll overflow-x-hidden">
+              {
+                photoStatus === "success" && postPhotos ?
+                  postPhotos.map((post, i) => {
+
+                    if (post.photos.length < 2) {
+                      return (
+                        <Link href={`/post/${post.id}`} key={post.id}>
+                          <div className="rounded-md overflow-hidden h-48 flex items-center shadow-md">
+                            <LazyLoadImage effect="blur" alt="photoPost" className="w-full h-ull" src={post.photos[0]} placeholder={<ShimmerThumbnail />} />
+                          </div>
+                        </Link>
+                      )
+                    } else {
+                      return (
+                        <>
+                          {
+                            post.photos.map((photo, i) => {
+                              return (
+                                <Link href={`/post/${post.id}`} key={i}>
+                                  <div className="rounded-md overflow-hidden h-48 flex items-center shadow-md">
+                                    <LazyLoadImage effect="blur" alt="photoPost" className="w-full h-ull" src={photo} placeholder={<ShimmerThumbnail />} />
+                                  </div>
+                                </Link>
+                              )
+
+                            })
+                          }
+                        </>
+                      )
+                    }
+
+
+                  })
+                  :
+                  <>
+                    <ShimmerThumbnail rounded={true} />
+                    <ShimmerThumbnail rounded={true} />
+                    <ShimmerThumbnail rounded={true} />
+                    <ShimmerThumbnail rounded={true} />
+                  </>
+              }
             </div>
+            {/* {hasnextPhotos && (
+              <button className="bg-blue-500 mt-2 disabled:bg-gray-400 p-4 rounded-sm shadow-md text-white font-semibold" onClick={() => nextPhotos()} disabled={isFetchingNextPhotos}>
+                {isFetchingNextPhotos ? 'Chargement...' : 'Afficher plus'}
+              </button>
+            )} */}
           </Card>
         </div>
       )}
     </div>
   );
 }
+
+//  <Link href={`/post/`} key={photo.id}>
+//   <div className="rounded-md overflow-hidden h-48 flex items-center shadow-md">
+//     <LazyLoadImage effect="blur" alt="photoPost" className="w-full h-ull" src="" placeholder={<ShimmerThumbnail />} />
+//   </div>
+// </Link> 

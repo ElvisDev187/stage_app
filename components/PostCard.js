@@ -113,7 +113,7 @@ export default function PostCard({ id, content, created_at, photos, profiles: au
         setDropdownOpen(false);
       });
     }
-   await client.invalidateQueries(["savedposts"])
+    client.invalidateQueries(["savedposts"])
   }
 
 
