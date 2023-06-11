@@ -1,17 +1,16 @@
 import Layout from "../components/Layout";
 import Card from "../components/Card";
-import Link from "next/link";
-import {useSession, useSupabaseClient} from "@supabase/auth-helpers-react";
-import { NextResponse } from "next/server";
+import { useSupabaseClient} from "@supabase/auth-helpers-react";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
+import { createClient } from "@supabase/supabase-js";
 
 
-export default  function LoginPage(props) {
 
+export default  function LoginPage({user}) {
 
+  const router = useRouter();
   const supabase = useSupabaseClient();
-  const router = useRouter()
   async function loginWithGoogle() {
     await supabase.auth.signInWithOAuth({
       provider: 'google'
@@ -33,15 +32,18 @@ export default  function LoginPage(props) {
       }
     });
   }
-
-  const session = useSession()
-
+  
  
-  useEffect(()=>{
-    if (!session) {
+
+  useEffect(() => {
+    if(user){
       router.push('/')
     }
-  },[session?.user])
+   
+  }, [router]);
+
+
+ 
   return (
     <Layout hideNavigation={true}>
       <div className="h-screen flex items-center">
@@ -68,6 +70,28 @@ export default  function LoginPage(props) {
     </Layout>
   );
 }
+
+/**
+ * 
+ * @param {import('next').GetServerSidePropsContext} ctx 
+ * @returns 
+ */
+export async function getServerSideProps(ctx){
+  const { cookies } = ctx.req
+  const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL,process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
+  const access_token = cookies["supabase-auth-token"]
+  const data = JSON.parse(access_token)
+  const user = await supabase.auth.getUser(data[0])
+  return {
+    props: {
+      user: user.data.user,
+    }
+  }
+
+}
+
+
+
 
 
 

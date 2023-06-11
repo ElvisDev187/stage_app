@@ -16,26 +16,30 @@ const PostDetailPage = ({post}) => {
 
 export default PostDetailPage
 
-export async function getStaticPaths(){
-  const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL,process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
- const {data} = await supabase.from('posts')
-      .select('id')
-      .is('parent', null)
-      .order('created_at', { ascending: false })
-    const paths = data.map(post =>{
-      return{
-        params: { postId: `${post.id}`}
-      }
-    })
+// export async function getStaticPaths(){
+//   const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL,process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
+//  const {data} = await supabase.from('posts')
+//       .select('id')
+//       .is('parent', null)
+//       .order('created_at', { ascending: false })
+//     const paths = data.map(post =>{
+//       return{
+//         params: { postId: `${post.id}`}
+//       }
+//     })
 
-    return {
-      paths,
-      fallback: false
-    }
+//     return {
+//       paths,
+//       fallback: false
+//     }
 
-}
-
-export async function getStaticProps(ctx){
+// }
+/**
+ * 
+ * @param {import('next').GetServerSidePropsContext} ctx 
+ * @returns 
+ */
+export async function getServerSideProps(ctx){
   const { params } = ctx
   const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL,process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
   const {data} = await supabase.from("posts")
@@ -45,8 +49,6 @@ export async function getStaticProps(ctx){
   return {
     props: {
       post: data[0],
-      nav: true,
-      back: true
     }
   }
 

@@ -23,7 +23,7 @@ export default function SavedPostsPage() {
       .range(nextPage * pageSize, (nextPage + 1) * pageSize - 1)
   }
 
-  const { data, isLoading, isStale, fetchNextPage, hasNextPage } = useInfiniteQuery({
+  const { data, isLoading, isStale, fetchNextPage, hasNextPage, refetch } = useInfiniteQuery({
     queryKey: ["savedposts"],
     queryFn: async ({ pageParam = 0 }) => {
       const res = await loadSvaed(pageParam, 3)
@@ -39,6 +39,7 @@ export default function SavedPostsPage() {
         return null // Indique qu'il n'y a plus de pages à récupérer
       }
     },
+
 
   })
 
@@ -64,22 +65,28 @@ export default function SavedPostsPage() {
 
           </>
           :
-          <div className="max-h-[90vh] overflow-y-scroll overflow-x-hidden">
-            {(posts.length > 0) && posts.map((post, index) => {
+          <div className="max-h-[90vh] min-h-[90vh] overflow-y-scroll overflow-x-hidden">
+            {(posts.length > 0 && posts != null) && posts.map((post, index) => {
               if (index + 1 == posts.length) {
                 return (
                   <div key={post.posts.id} ref={ref}>
-                    <PostCard {...post.posts} />
+                    <PostCard {...post.posts} refetchSave={refetch}/>
                   </div>
                 )
               } else {
                 return (
                   <div key={post.posts.id}>
-                    <PostCard {...post.posts} />
+                    <PostCard {...post.posts}  refetchSave={refetch}/>
                   </div>
                 )
               }
             })}
+
+            {!(posts.length > 0 && posts != null)&&(
+              <div>
+                <h2>No posts saved</h2>
+              </div>
+            )}
           </div>
       }
 

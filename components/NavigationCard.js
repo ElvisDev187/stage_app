@@ -1,26 +1,40 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import Card from "./Card";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import { UserContext } from "../contexts/UserContext";
+import { Equals } from "../lib/utils";
 
 export default function NavigationCard() {
   const router = useRouter();
   const { profile, notifNumber } = useContext(UserContext);
+  const [isMy, setIsMy] = useState(false)
   const { asPath: pathname } = router;
   const activeElementClasses = 'text-sm md:text-md flex gap-1 md:gap-3 py-3 my-1 bg-socialBlue text-white md:-mx-7 px-6 md:px-7 rounded-md shadow-md shadow-gray-300 items-center';
   const nonActiveElementClasses = 'text-sm md:text-md flex gap-1 md:gap-3 py-2 my-2 hover:bg-blue-500 hover:bg-opacity-20 md:-mx-4 px-6 md:px-4 rounded-md transition-all hover:scale-110 hover:shadow-md shadow-gray-300 items-center';
-
+ 
   const supabase = useSupabaseClient();
   async function logout() {
     await supabase.auth.signOut();
     router.push('/login')
   }
 
+  const tab = pathname.split('/').slice(1,3);
+  
+
+  useEffect(()=>{
+    if (!profile) {
+      return
+    }
+    setIsMy(Equals(tab,["profile", profile?.id]))
+  },[profile,pathname])
+
+ 
   return (
     <Card noPadding={true}>
-      <div className="px-4 py-2 flex justify-between flex-col md:block shadow-md shadow-gray-500 md:shadow-none">
+      <div className="px-4 py-2 flex justify-between md:flex-col sm:flex-row shadow-md shadow-gray-500 md:shadow-none">
         <h2 className="text-gray-400 mb-3 hidden md:block">Navigation</h2>
         <Link href="/" className={pathname === '/' ? activeElementClasses : nonActiveElementClasses}>
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
@@ -28,7 +42,7 @@ export default function NavigationCard() {
           </svg>
           <span className="hidden md:block">Home</span>
         </Link>
-        <Link href={`/profile/${profile?.id}/`} className={pathname === `/profile/${profile?.id}/` ? activeElementClasses : nonActiveElementClasses}>
+        <Link href={`/profile/${profile?.id}/`} className={isMy? activeElementClasses : nonActiveElementClasses}>
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
             <path strokeLinecap="round" strokeLinejoin="round" d="M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0a9 9 0 10-11.963 0m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z" />
           </svg>

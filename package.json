@@ -29,6 +29,7 @@
     "react-shimmer-effects": "^1.0.2",
     "react-spinners": "^0.13.7",
     "react-time-ago": "^7.2.1",
+    "sharp": "^0.32.1",
     "tailwindcss": "^3.2.2"
   }
 }
