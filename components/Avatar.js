@@ -24,7 +24,7 @@ export default function Avatar({size,url,editable,onChange}) {
   }
 
   return (
-    <div className={`${width} relative `}>
+    <div className={`${width} relative z-1`}>
       <div className={`rounded-full overflow-hidden flex justify-center items-center relative ${size? "w-24 h-24 md:h-36 md:w-36": "w-12 h-12"}`}>
         {/* <Image src={url} alt="" fill loading="lazy" placeholder="blur" blurDataURL="/white.jpg" className="w-full h-full"/> */}
         <LazyLoadImage effect="blur" src={url} alt="photoPost" className="w-full h-ull" />

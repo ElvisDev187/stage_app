@@ -93,7 +93,7 @@ export default function ProfileContent({ activeTab, userId }) {
 
   const posts = postData?.pages.flatMap((page) => page)
   const postPhotos = photoData?.pages.flatMap((page) => page)
-  console.log({ postPhotos, photoStatus });
+
 
   return (
     <div>

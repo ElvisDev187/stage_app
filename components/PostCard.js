@@ -15,7 +15,7 @@ import { LazyLoadImage} from "react-lazy-load-image-component";
 import {  ShimmerThumbnail } from "react-shimmer-effects";
 
 
-export default function PostCard({ id, content, created_at, photos, profiles: authorProfile }) {
+export default function PostCard({ id, content, created_at, photos, profiles: authorProfile , refetchSave}) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [commentOpen, setCommentOpen] = useState(false);
   const [likes, setLikes] = useState([]);
@@ -25,6 +25,29 @@ export default function PostCard({ id, content, created_at, photos, profiles: au
   const { profile: myProfile } = useContext(UserContext);
   const supabase = useSupabaseClient();
   const client = useQueryClient()
+
+  const postChanel = supabase.channel(`post/${id}`)
+  .on(
+    'postgres_changes',
+    { event: 'INSERT', schema: 'public', table: 'posts' },
+    async (payload) => {
+      console.log(payload.new);
+      // // await client.invalidateQueries(['posts', `${id}`, 'comments',])
+      if(payload.new?.parent === id){
+       
+         await refetch();
+          fectNb()
+      }
+    }
+  )
+ 
+   useEffect(()=>{
+      if(commentOpen){
+        postChanel.subscribe()
+      }else{
+        postChanel.unsubscribe()
+      }
+   },[commentOpen])
   useEffect(() => {
     fetchLikes();
     fectNb()
@@ -99,8 +122,9 @@ export default function PostCard({ id, content, created_at, photos, profiles: au
         .delete()
         .eq('post_id', id)
         .eq('user_id', myProfile?.id)
-        .then(result => {
+        .then(async(result) => {
           setIsSaved(false);
+          refetchSave()
           setDropdownOpen(false);
         });
     }
@@ -108,16 +132,17 @@ export default function PostCard({ id, content, created_at, photos, profiles: au
       supabase.from('saved_posts').insert({
         user_id: myProfile.id,
         post_id: id,
-      }).then(result => {
+      }).then(async(result) => {
         setIsSaved(true);
+        refetchSave()
         setDropdownOpen(false);
       });
     }
-    client.invalidateQueries(["savedposts"])
+   
   }
 
 
-  const { data, fetchNextPage, isFetchingNextPage, hasNextPage, status } = useInfiniteQuery(
+  const { data, fetchNextPage, isFetchingNextPage, refetch, hasNextPage, status } = useInfiniteQuery(
     ['posts', `${id}`, 'comments',],
     async ({ pageParam = 0 }) => {
       const res = await fetchComments(pageParam, 2)
@@ -361,7 +386,7 @@ export default function PostCard({ id, content, created_at, photos, profiles: au
           <div>
             <Avatar url={myProfile?.avatar} />
           </div>
-          <div className="border grow rounded-full relative z-0">
+          <div className="border grow rounded-full relative" onClick={openComment}>
             <form onSubmit={postComment}>
               <input
                 value={commentText}
