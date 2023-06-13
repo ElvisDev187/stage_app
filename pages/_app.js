@@ -35,7 +35,7 @@ function MyApp({ Component, pageProps }) {
         <UserContextProvider>
           <Component {...pageProps} />
         </UserContextProvider>
-        <ReactQueryDevtools initialIsOpen={false} />
+        {/* <ReactQueryDevtools initialIsOpen={false} /> */}
       </QueryClientProvider>
     </SessionContextProvider>
   );

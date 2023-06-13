@@ -88,9 +88,9 @@ export default function NotificationsPage() {
     <Layout hideNavigation={false}>
       <h1 className="text-6xl mb-4 text-gray-300">Notifications</h1>
       <Card noPadding={true}>
-        <div className="">
+        <div className="mb-1">
           {notifications?.length > 0 && notifications.map(notification => (
-            <div key={notification?.id} className="flex gap-2 items-center border-b border-b-gray-100 p-4 relative">
+            <div key={notification?.id} className="flex gap-2 md:flex-nowrap sm:flex-wrap items-center border-b border-b-gray-100 p-4 relative">
               <Link href={'/profile'}>
                 <Avatar url={notification?.profiles?.avatar} />
               </Link>

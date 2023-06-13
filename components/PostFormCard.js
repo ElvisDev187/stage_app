@@ -7,6 +7,7 @@ import Preloader from "./Preloader";
 import ClickOutHandler from "react-clickout-handler";
 import EmojiPickerComponent from "./Emojipicker";
 import Image from "next/image";
+import { LazyLoadImage } from "react-lazy-load-image-component";
 
 export default function PostFormCard({onPost}) {
   const [content,setContent] = useState('');
@@ -69,7 +70,7 @@ export default function PostFormCard({onPost}) {
         {profile && (
           <textarea value={content}
                     onChange={e => setContent(e.target.value)}
-                    className="grow p-3 h-14" placeholder={`Whats on your mind, ${profile?.name}?`} />
+                    className="grow p-3 max-h-max h-14" placeholder={`Whats on your mind, ${profile?.name}?`} />
         )}
       </div>
       {isUploading && (
@@ -80,8 +81,8 @@ export default function PostFormCard({onPost}) {
       {uploads.length > 0 && (
         <div className="flex gap-2">
           {uploads.map(upload => (
-            <div className="mt-2 w-auto h-24 flex justify-center items-center relative" key={upload} >
-              <Image fill loading="lazy" placeholder="blur" blurDataURL="/white.jpg" src={upload} alt="" className=" rounded-md" />
+            <div className="mt-2 w-[120px] h-24 flex justify-center items-center relative" key={upload} >
+             <LazyLoadImage effect="blur" src={upload} alt="photoPost" className="w-full h-ull rounded-md" />
             </div>
           ))}
         </div>

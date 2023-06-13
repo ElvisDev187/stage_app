@@ -422,7 +422,8 @@ export default function PostCard({ id, content, created_at, photos, profiles: au
                     <p className="text-sm">{comment.content}</p>
                     {comment?.photos?.length > 0 && (
                       <div className="w-[150px] h-[100px] flex items-center justify-center rounded-md overflow-hidden mb-1">
-                        <Image className="" fill loading="lazy" placeholder="blur" blurDataURL="../public/white.jpg" src={comment?.photos[0]} alt={comment.content} />
+                        <LazyLoadImage effect="blur" src={comment?.photos[0]} alt="photoPost" className="w-full h-ull" />
+                        {/* <LazyLoadImage className="" fill loading="lazy" placeholder="blur" blurDataURL="../public/white.jpg" src={comment?.photos[0]} alt={comment.content} /> */}
                       </div>
                     )}
                   </div>
@@ -446,7 +447,7 @@ export default function PostCard({ id, content, created_at, photos, profiles: au
                     <p className="text-sm">{comment.content}</p>
                     {comment?.photos?.length > 0 && (
                       <div className="w-[150px] h-[100px] flex items-center justify-center rounded-md mb-1 overflow-hidden">
-                        <img className="w-full h-full" src={comment?.photos[0]} alt={comment.content} />
+                        <LazyLoadImage effect="blur" src={comment?.photos[0]} alt="photoPost" className="w-full h-ull" />
                       </div>
                     )}
                   </div>

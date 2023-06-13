@@ -89,7 +89,7 @@ export default function ProfilePage() {
                     </div>
                   )}
                   {!editMode && (
-                    <h1 className="text-3xl font-bold">
+                    <h1 className="md:text-3xl font-bold sm:text-2xl">
                       {profile?.name}
                     </h1>
                   )}
@@ -108,7 +108,7 @@ export default function ProfilePage() {
                     </div>
                   )}
                 </div>
-                <div className="grow">
+                <div className="grow min-w-fit">
                   <div className="text-right">
                     {isMyUser && !editMode && (
                       <button
