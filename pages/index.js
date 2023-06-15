@@ -67,9 +67,9 @@ export default function Home() {
   return (
     <Layout hideNavigation={false} back={false}>
 
-      <PostFormCard onPost={afterPost} />
+      {/* <PostFormCard onPost={afterPost} /> */}
 
-      <div className="max-h-[75vh] overflow-y-scroll">
+      <div className="max-h-[100vh] overflow-y-scroll">
         {isLoading?
           <>
             <ShimmerSocialPost type="both" />
