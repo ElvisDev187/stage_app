@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import { useContext, useEffect, useState } from "react";
 import { UserContext } from "../contexts/UserContext";
-import { Equals } from "../lib/utils";
+import { Equals } from "../lib/util";
 
 export default function NavigationCard() {
   const router = useRouter();

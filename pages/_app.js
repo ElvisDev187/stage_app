@@ -10,12 +10,17 @@ import Layout from '../components/Layout';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { UserContextProvider } from '../contexts/UserContext';
-
+import Avatar from '../components/Avatar';
+import { BiPlus, BiMessageAdd } from 'react-icons/bi'
+import CreatePostDialog from '../components/CreatePostDialog';
+import { useRouter } from 'next/router';
+import { Toaster } from 'react-hot-toast';
 TimeAgo.addLocale(en);
 
 function MyApp({ Component, pageProps }) {
   const [supabaseClient] = useState(() => createBrowserSupabaseClient());
-  const [queryClient] = useState(()=> new QueryClient({
+  const router = useRouter()
+  const [queryClient] = useState(() => new QueryClient({
     defaultOptions: {
       queries: {
         staleTime: 1000 * 60 * 2,
@@ -25,7 +30,7 @@ function MyApp({ Component, pageProps }) {
       }
     }
   }))
- 
+
   return (
     <SessionContextProvider
       supabaseClient={supabaseClient}
@@ -33,9 +38,19 @@ function MyApp({ Component, pageProps }) {
     >
       <QueryClientProvider client={queryClient}>
         <UserContextProvider>
-          <Component {...pageProps} />
+          <div className={`relative min-h-full ${router.asPath.includes("/admin")? "w-[100vw]": "w-[80vw]"}`}>
+            {router.asPath == '/' && (
+              <CreatePostDialog>
+              <div className="absolute cursor-pointer shadow-gray-400 shadow-md flex items-center bg-green-500 text-white font-bold text-3xl justify-center w-[80px] h-[80px] rounded-full z-50 right-10 md:right-[250px] bottom-[150px]">
+                <BiMessageAdd/>
+              </div>
+            </CreatePostDialog>
+            )}
+            <Component {...pageProps} />
+            <Toaster/>
+          </div>
         </UserContextProvider>
-        {/* <ReactQueryDevtools initialIsOpen={false} /> */}
+        <ReactQueryDevtools initialIsOpen={false} />
       </QueryClientProvider>
     </SessionContextProvider>
   );
