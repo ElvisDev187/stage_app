@@ -2,37 +2,35 @@ import Layout from "../components/Layout";
 import Card from "../components/Card";
 import Avatar from "../components/Avatar";
 import Link from "next/link";
-import { useSession, useSupabaseClient } from "@supabase/auth-helpers-react";
-import { useState, useEffect, useContext } from "react";
+import { useSupabaseClient } from "@supabase/auth-helpers-react";
+import { useContext } from "react";
 import { UserContext } from "../contexts/UserContext";
-import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
+import { useInfiniteQuery} from "@tanstack/react-query";
 import ReactTimeAgo from "react-time-ago";
-
+import useSound from "use-sound";
+import Sound from '../public/audio/sound1.mp3'
 
 export default function NotificationsPage() {
 
   const { profile, setNotif } = useContext(UserContext)
   const supabase = useSupabaseClient()
-  const client = useQueryClient()
+  const [play] = useSound('/audio/sound1.mp3',{ volume: 1})
+  
   const notificationsChannel = supabase.channel('custom-insert-channel')
     .on(
       'postgres_changes',
       { event: 'INSERT', schema: 'public', table: 'notifications' },
       async (payload) => {
-        console.log('Change received!', payload)
-        await client.invalidateQueries("notifications")
+        if(payload.new?.author == profile?.id){
+         
+          refetch().then(()=>  play())
+        }
+
       }
     )
     .subscribe()
 
-  // use to fetch number
 
-  // supabase.from('notifications')
-  //   .select('*')
-  //   .eq('author', profile?.id)
-  //   .then(result=>{
-  //       console.log("LENGTH",result.data?.length);
-  //   })
 
 
   async function fechtNotifications(nextPage, pageSize) {
@@ -45,7 +43,7 @@ export default function NotificationsPage() {
   }
 
 
-  const { data, fetchNextPage, isFetchingNextPage, hasNextPage, status } = useInfiniteQuery(
+  const { data, fetchNextPage, isFetchingNextPage, hasNextPage, status, refetch } = useInfiniteQuery(
     ['notifications'],
     async ({ pageParam = 0 }) => {
       const res = await fechtNotifications(pageParam, 5)
@@ -72,7 +70,7 @@ export default function NotificationsPage() {
     })
     .eq('id', notifId)
     .then(async (res)=>{
-     await client.invalidateQueries("notifications")
+     refetch()
      setNotif(prev=> prev--);
     })
   }
@@ -91,13 +89,13 @@ export default function NotificationsPage() {
         <div className="mb-1">
           {notifications?.length > 0 && notifications.map(notification => (
             <div key={notification?.id} className="flex gap-2 md:flex-nowrap sm:flex-wrap items-center border-b border-b-gray-100 p-4 relative">
-              <Link href={'/profile'}>
+              <Link href={`/profile/${notification?.profiles?.id}`} onClick={() =>markAsread(notification?.id)}>
                 <Avatar url={notification?.profiles?.avatar} />
               </Link>
               <div>
-                <Link href={`/profile/${notification?.profiles?.id}`} className={'font-semibold mr-1 hover:underline'}>{notification?.profiles?.name}</Link>
+                <Link href={`/profile/${notification?.profiles?.id}`}  onClick={() =>markAsread(notification?.id)} className={'font-semibold mr-1 hover:underline'}>{notification?.profiles?.name}</Link>
                 {notification?.type}
-                <Link href={`/post/${notification?.post_id}`} className={'ml-1 text-socialBlue hover:underline'}>your Post</Link>
+                <Link href={`/post/${notification?.post_id}`}  onClick={() =>markAsread(notification?.id)} className={'ml-1 text-socialBlue hover:underline'}>your Post</Link>
               </div>
 
               <p className="text-gray-400 text-sm font-semibold">

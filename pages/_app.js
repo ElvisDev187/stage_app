@@ -15,11 +15,13 @@ import { BiPlus, BiMessageAdd } from 'react-icons/bi'
 import CreatePostDialog from '../components/CreatePostDialog';
 import { useRouter } from 'next/router';
 import { Toaster } from 'react-hot-toast';
+import useSound from 'use-sound';
 TimeAgo.addLocale(en);
 
 function MyApp({ Component, pageProps }) {
   const [supabaseClient] = useState(() => createBrowserSupabaseClient());
   const router = useRouter()
+  const [play] = useSound('/audio/sound1.mp3', {volume: 1})
   const [queryClient] = useState(() => new QueryClient({
     defaultOptions: {
       queries: {
@@ -38,7 +40,7 @@ function MyApp({ Component, pageProps }) {
     >
       <QueryClientProvider client={queryClient}>
         <UserContextProvider>
-          <div className={`relative min-h-full ${router.asPath.includes("/admin")? "w-[100vw]": "w-[80vw]"}`}>
+          <div className={`relative min-h-full w-full ${router.asPath.includes("/admin")? "md:w-[100vw]": "md:w-[80vw]"}`}>
             {router.asPath == '/' && (
               <CreatePostDialog>
               <div className="absolute cursor-pointer shadow-gray-400 shadow-md flex items-center bg-green-500 text-white font-bold text-3xl justify-center w-[80px] h-[80px] rounded-full z-50 right-10 md:right-[250px] bottom-[150px]">

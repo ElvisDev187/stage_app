@@ -18,7 +18,7 @@ export default function Home() {
       .order('created_at', { ascending: false })
   }
 
-  const { data: reports, isLoading } = useQuery({
+  const { data: reports, isLoading, isError } = useQuery({
     queryFn: async () => {
       const res = await fectReport()
       return res.data
@@ -81,7 +81,7 @@ export default function Home() {
         {/* <TopCards /> */}
         <div className='p-4 grid md:grid-cols-3 grid-cols-1  gap-4'>
           <BarChart data={dataChart} isLoading={isLoading}/>
-          <RecentOrders recent={recent} isLoading={isLoading} />
+          <RecentOrders recent={recent} isLoading={isLoading} isError={isError} />
         </div>
       </main>
     </Sidebar>

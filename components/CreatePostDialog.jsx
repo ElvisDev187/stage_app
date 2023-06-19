@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useRef, useState } from 'react'
 import {
     AlertDialog,
     AlertDialogAction,
@@ -21,18 +21,51 @@ import { useQueryClient } from '@tanstack/react-query'
 import toast from 'react-hot-toast';
 import { ImagePlus } from 'lucide-react';
 import { Button } from './ui/button';
-
+import { v4 as uuid } from 'uuid';
 const CreatePostDialog = ({ children }) => {
 
     const [content, setContent] = useState('');
     const [uploads, setUploads] = useState([]);
-    const [isUploading, setIsUploading] = useState(false);
-    const [dropdownOpen, setDropdownOpen] = useState(false);
+    const [isUploading, setIsUploading] = useState(true);
+    const [Files, setFiles] = useState([]);
     const supabase = useSupabaseClient();
     const session = useSession();
     const { profile } = useContext(UserContext);
     const client = useQueryClient()
 
+    function previewFiles(e) {
+        const preview = document.querySelector("#preview");
+        const files =e.target.files
+        setFiles(files)
+        addPhotos()
+        function readAndPreview(file) {
+          // Make sure `file.name` matches our extensions criteria
+          if (/\.(jpe?g|png|gif)$/i.test(file.name)) {
+            const reader = new FileReader();
+      
+            reader.addEventListener(
+              "load",
+              () => {
+                const image = new Image();
+                image.height = 100;
+                image.width = 150;
+                image.title = file.name;
+                image.src = reader.result;
+                preview.appendChild(image);
+              },
+              false
+            );
+      
+            reader.readAsDataURL(file);
+          }
+        }
+      
+        if (files) {
+          Array.prototype.forEach.call(files, readAndPreview);
+        }
+      }
+      
+      
 
     function handleClickOutsideDropdown(e) {
         e.stopPropagation();
@@ -40,8 +73,8 @@ const CreatePostDialog = ({ children }) => {
     }
 
 
-    function createPost() {
-        supabase.from('posts').insert({
+    async function createPost() { 
+            supabase.from('posts').insert({
             author: session.user.id,
             content,
             photos: uploads,
@@ -53,15 +86,17 @@ const CreatePostDialog = ({ children }) => {
                 client.invalidateQueries("posts")
             }
         });
+        
+      
     }
 
 
-    async function addPhotos(ev) {
-        const files = ev.target.files;
-        if (files.length > 0) {
+    async function addPhotos() {
+        console.log(Files);
+        if (Files.length > 0) {
             setIsUploading(true);
-            for (const file of files) {
-                const newName = Date.now() + file.name;
+            for (const file of Files) {
+                const newName = uuid()
                 const result = await supabase
                     .storage
                     .from('photos')
@@ -74,6 +109,7 @@ const CreatePostDialog = ({ children }) => {
                 }
             }
             setIsUploading(false);
+            console.log(uploads);
         }
     }
 
@@ -96,35 +132,23 @@ const CreatePostDialog = ({ children }) => {
                                         className="grow p-3 max-h-max h-20" placeholder={`Whats on your mind, ${profile?.name}?`} />
                                 )}
                             </div>
-                            {isUploading && (
-                                <div>
-                                    <Preloader />
-                                </div>
-                            )}
-                            {uploads.length > 0 && (
-                                <div className="flex gap-2">
-                                    {uploads.map(upload => (
-                                        <div className="mt-2 w-[120px] h-24 flex justify-center items-center relative" key={upload} >
-                                            <LazyLoadImage effect="blur" src={upload} alt="photoPost" className="w-full h-ull rounded-md" />
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
+                            <div className="flex gap-2 max-h-[100px]" id='preview'>
+                            </div>
                         </>
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                     <Button>
                         <label className="flex gap-1 cursor-pointer">
-                            <input type="file" className="hidden" multiple onChange={addPhotos} />
+                            <input type="file" className="hidden" multiple accept="image/*" onChange={previewFiles} />
                             <ImagePlus />
-                         <span className="hidden md:block">Photos</span>
+                            <span className="hidden md:block">Photos</span>
                         </label>
                     </Button>
                     <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <div id="" onClick={() => createPost()}>
-                        <AlertDialogAction className='bg-socialBlue'>Create</AlertDialogAction>
-                    </div>
+
+                    <AlertDialogAction  onClick={async (e) => await createPost()} className='bg-socialBlue'> Create</AlertDialogAction>
+                    {/* <Button type="submit" onClick={async (e) => await createPost()} className='bg-socialBlue' >Save changes</Button> */}
                 </AlertDialogFooter>
             </AlertDialogContent>
         </AlertDialog>
