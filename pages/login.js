@@ -71,7 +71,7 @@ export default function LoginPage({ }) {
                 className='bg-white-500 border  shadow-md border-gray-300 p-2 focus:outline-none focus:shadow-blue-300 focus:shadow rounded-sm text-md text-gray-700 mt-3 mb-0'
                 type="password"
                 placeholder="Password" />
-                <Button className="bg-socialBlue" disabled={isLoading}>
+                <Button className="bg-socialBlue"  disabled={login.length == 0 || pwd.length == 0}>
                   {isLoading && <Loader2 className="animate-spin mr-2 h-4 w-4"/>}   Login
                 </Button>
             </div>

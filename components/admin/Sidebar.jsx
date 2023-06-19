@@ -9,7 +9,7 @@ import { LuShieldAlert } from 'react-icons/lu';
 export default function Sidebar({ children }){
   return (
     <div className='flex'>
-      <div className='fixed w-20 h-screen p-4 bg-white border-r-[1px] flex flex-col justify-between'>
+      <div className='fixed  h-screen p-4 bg-white border-r-[1px] flex flex-col justify-between'>
         <div className='flex flex-col items-center'>
           
             <div className='bg-purple-800 text-white p-3 rounded-lg inline-block'>

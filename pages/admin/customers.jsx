@@ -1,10 +1,53 @@
 
 import React from 'react';
-import { BsPersonFill, BsThreeDotsVertical } from 'react-icons/bs';
-import { data } from '../../data/data';
+import { BsArchive, BsPersonFill, BsThreeDotsVertical } from 'react-icons/bs';
+// import { data } from '../../data/data';
 import Sidebar from '../../components/admin/Sidebar';
+import { useSupabaseClient } from '@supabase/auth-helpers-react';
+import { useQuery } from '@tanstack/react-query';
+import SignalInfo from '../../components/SignalInfo';
 
-const customers = () => {
+const Customers = () => {
+
+  const supabase = useSupabaseClient()
+  // Fonction de comparaison basée sur l'attribut "id" de "profiles"
+  function comparerObjets(objet1, objet2) {
+    return objet1.posts.profiles.id.localeCompare(objet2.posts.profiles.id);
+  }
+
+  const { data , isLoading, isError} = useQuery({
+    queryFn: async () => {
+      const { data } = await supabase.from("reports").select('posts(profiles(id,name))')
+
+
+      // Tri du tableau d'objets
+      data.sort(comparerObjets);
+
+      // Tableau pour stocker les objets uniques
+      var tableauObjetsUniques = [];
+
+      // Parcours du tableau trié pour éliminer les doublons
+      for (var i = 0; i < data.length; i++) {
+        // Vérification si l'objet suivant est différent de l'objet actuel
+        if (i === 0 || comparerObjets(data[i], data[i - 1]) !== 0) {
+          tableauObjetsUniques.push(data[i]);
+        }
+      }
+
+      return tableauObjetsUniques
+    },
+    queryKey: ['signal-by']
+  })
+
+  if(isError){
+    return <h1>Error occur</h1>
+  }
+
+  if(isLoading){
+    return <h1>Loading...</h1>
+  }
+
+
   return (
     <Sidebar>
       <div className='bg-gray-100 min-h-screen'>
@@ -13,28 +56,23 @@ const customers = () => {
           <h2>Welcome Back, Clint</h2>
         </div>
         <div className='p-4'>
-          <div className='w-full m-auto p-4 border rounded-lg bg-white overflow-y-auto'>
-            <div className='my-3 p-2 grid md:grid-cols-4 sm:grid-cols-3 grid-cols-2 items-center justify-between cursor-pointer'>
-              <span>Name</span>
-              <span className='sm:text-left text-right'>Email</span>
-              <span className='hidden md:grid'>Last Order</span>
-              <span className='hidden sm:grid'>Method</span>
+          <div className='w-[80%]  m-auto p-4 border rounded-lg bg-white'>
+            <div className='my-3  p-2 grid md:grid-cols-4 sm:grid-cols-3 grid-cols-2 items-center justify-between cursor-pointer'>
+              <span className='ml-4'>Name</span>
+              <span className='sm:text-left text-right ml-4'>Number</span>
+              <span className='hidden md:grid'>Last report</span>
+              {/* <span className='hidden sm:grid'>Method</span> */}
             </div>
-            <ul>
+            <ul className='max-h-[70vh]  overflow-y-scroll px-4'>
               {data.map((order, id) => (
-                <li key={id} className='bg-gray-50 hover:bg-gray-100 rounded-lg my-3 p-2 grid md:grid-cols-4 sm:grid-cols-3 grid-cols-2 items-center justify-between cursor-pointer'>
+                <li key={id} className='bg-gray-50 font-semibold hover:bg-gray-100 rounded-lg my-3 p-2 grid md:grid-cols-4 sm:grid-cols-3 grid-cols-2 items-center justify-between '>
                   <div className='flex items-center'>
-                    <div className='bg-purple-100 p-3 rounded-lg'>
-                      <BsPersonFill className='text-purple-800' />
+                    <div className='bg-emerald-100 p-3 rounded-lg'>
+                      <BsPersonFill className='text-emerald-500' />
                     </div>
-                    <p className='pl-4'>{order.name.first + ' ' + order.name.last}</p>
+                    <p className='pl-4'>{order.posts.profiles.name}</p>
                   </div>
-                  <p className='text-gray-600 sm:text-left text-right'>{order.name.first}@gmail.com</p>
-                  <p className='hidden md:flex'>{order.date}</p>
-                  <div className='sm:flex hidden justify-between items-center'>
-                    <p>{order.method}</p>
-                    <BsThreeDotsVertical />
-                  </div>
+                  <SignalInfo userId={order.posts.profiles.id}/>
                 </li>
               ))}
             </ul>
@@ -45,4 +83,4 @@ const customers = () => {
   );
 };
 
-export default customers;
+export default Customers;
