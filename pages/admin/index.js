@@ -11,7 +11,8 @@ import { useQuery } from '@tanstack/react-query';
 
 export default function Home() {
   const supabase = useSupabaseClient()
-  const fectReport = async () => {
+  
+  const fectReport = async() => {
     return supabase.from("reports")
       .select('id, created_at, posts(id,profiles(name)), profiles(*)')
       .eq("isread", false)
@@ -81,7 +82,7 @@ export default function Home() {
         {/* <TopCards /> */}
         <div className='p-4 grid md:grid-cols-3 grid-cols-1  gap-4'>
           <BarChart data={dataChart} isLoading={isLoading}/>
-          <RecentOrders recent={recent} isLoading={isLoading} isError={isError} />
+          <RecentOrders recent={reports} isLoading={isLoading} isError={isError} />
         </div>
       </main>
     </Sidebar>
