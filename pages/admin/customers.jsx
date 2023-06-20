@@ -57,7 +57,7 @@ const Customers = () => {
         </div>
         <div className='p-4'>
           <div className='w-[80%]  m-auto p-4 border rounded-lg bg-white'>
-            <div className='my-3  p-2 grid md:grid-cols-4 sm:grid-cols-3 grid-cols-2 items-center justify-between cursor-pointer'>
+            <div className='my-3  p-2 grid md:grid-cols-4 sm:grid-cols-3 grid-cols-2 items-center justify-between'>
               <span className='ml-4'>Name</span>
               <span className='sm:text-left text-right ml-4'>Number</span>
               <span className='hidden md:grid'>Last report</span>

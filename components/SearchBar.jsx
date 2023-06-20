@@ -48,7 +48,7 @@ const SearchBar= ({}) => {
   } = useQuery({
     queryFn: async () => {
       if (!input) return []
-      const { data } = await supabase.from("profiles").select('name,id').ilike('name', input)
+      const { data } = await supabase.from("profiles").select('name,id').ilike('name', `%${input}%`)
       return data 
     },
     queryKey: ['search-query'],
@@ -64,7 +64,6 @@ const SearchBar= ({}) => {
       ref={commandRef}
       className='relative rounded-lg border max-w-lg z-50 overflow-visible'>
       <CommandInput
-        isloading={isFetching}
         onValueChange={(text) => {
           setInput(text)
           debounceRequest()

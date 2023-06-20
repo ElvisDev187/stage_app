@@ -37,7 +37,7 @@ export default function BarChart({data,isLoading}){
                 label: 'report number',
                 data: [data[1]?.length || 0, data[2]?.length || 0, data[3]?.length || 0, data[4]?.length || 0, data[5]?.length || 0, data[6]?.length || 0, data[0]?.length || 0],
                 borderColor: 'rgb(53, 162, 235)',
-                backgroundColor: 'rgb(53, 162, 235, 0.4',
+                backgroundColor: '#adfa1d',
               }, 
         ]
     })

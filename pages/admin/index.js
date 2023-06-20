@@ -7,6 +7,7 @@ import RecentOrders from '../../components/admin/RecentOrders';
 import Sidebar from '../../components/admin/Sidebar';
 import { useSupabaseClient } from '@supabase/auth-helpers-react';
 import { useQuery } from '@tanstack/react-query';
+import { Overview } from '@/components/admin/CustomChart';
 
 
 export default function Home() {
@@ -80,8 +81,10 @@ export default function Home() {
       <main className='bg-gray-100 min-h-screen'>
         <Header />
         {/* <TopCards /> */}
-        <div className='p-4 grid md:grid-cols-3 grid-cols-1  gap-4'>
+        <div className='p-4 grid md:grid-cols-3 grid-cols-1 items-end gap-4'>
           <BarChart data={dataChart} isLoading={isLoading}/>
+         {/* {isLoading? <div className='w-full md:col-span-2 relative lg:h-[70vh] h-[50vh] m-auto p-4 border rounded-lg bg-white'></div>
+          : <Overview data={dataChart}/>} */}
           <RecentOrders recent={reports} isLoading={isLoading} isError={isError} />
         </div>
       </main>

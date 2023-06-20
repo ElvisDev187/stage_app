@@ -1,4 +1,4 @@
-import {createContext, useEffect, useState} from "react";
+import {createContext, useEffect, useRef, useState} from "react";
 import {useSession, useSupabaseClient} from "@supabase/auth-helpers-react";
 
 export const UserContext = createContext({});
@@ -8,6 +8,7 @@ export function UserContextProvider({children}) {
   const supabase = useSupabaseClient();
   const [profile,setProfile] = useState(null);
   const [notifNumber,setNotif] = useState(0);
+  const audioRef = useRef(null)
   useEffect(() => {
     if (!session?.user?.id) {
       return;
@@ -31,6 +32,11 @@ export function UserContextProvider({children}) {
         'postgres_changes',
         { event: '*', schema: 'public', table: 'notifications' },
         async (payload) => {
+
+          if(payload.new?.author == profile?.id){
+         
+               audioRef?.current?.play()
+          }
       
           supabase.from('notifications')
           .select('*')
@@ -46,8 +52,9 @@ export function UserContextProvider({children}) {
 
  
   return (
-    <UserContext.Provider value={{profile, notifNumber, setNotif}}>
+    <UserContext.Provider value={{profile, notifNumber, setNotif, audioRef}}>
       {children}
+      <audio src="/audio/sound1.mp3" ref={audioRef} ></audio>
     </UserContext.Provider>
   );
 }
