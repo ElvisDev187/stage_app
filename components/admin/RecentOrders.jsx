@@ -13,9 +13,9 @@ export default function RecentOrders({ recent, isLoading, isError, }) {
   return (
 
 
-    <div className='w-full col-span-1 relative lg:h-[70vh] h-[50vh] m-auto p-4 border rounded-lg bg-white overflow-scroll'>
+    <div className='w-full col-span-1 relative  m-auto p-4 border rounded-lg bg-white '>
       <h1 className='font-bold text-gray-900' >Recent report - 12 Hours</h1>
-      <ul>
+      <ul className='overflow-scroll lg:h-[70vh] h-[50vh] px-3'>
         {
           isLoading ?
             <div className='mt-5'>

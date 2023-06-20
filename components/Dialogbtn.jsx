@@ -49,10 +49,10 @@ export function AlertDialogDemo({ children, id, user }) {
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                    <AlertDialogCancel disabled={isLoading}>Cancel</AlertDialogCancel>
+                    <AlertDialogCancel id='cancel' disabled={isLoading}>Cancel</AlertDialogCancel>
 
                     <AlertDialogAction ref={close} className='hidden' ></AlertDialogAction>
-                    <Button disabled={isLoading} onClick={async () => {
+                    <Button id="btn" disabled={isLoading} onClick={async () => {
                        await addTorepport()
                        close.current.click()
                     }}> 
