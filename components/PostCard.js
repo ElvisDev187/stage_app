@@ -110,12 +110,9 @@ export default function PostCard({ id, content, created_at, photos, profiles: au
     setCommentOpen(true);
   }
   function handleClickOutsideDropdown(e) {
-    e.stopPropagation();
     if(e instanceof TouchEvent){
       if(e.target.id == "btn"){
-
       }else{
-
         setDropdownOpen(false);
       }
     }
@@ -132,7 +129,7 @@ export default function PostCard({ id, content, created_at, photos, profiles: au
         .eq('user_id', myProfile?.id)
         .then(async (result) => {
           setIsSaved(false);
-          if (refetchSav) {
+          if (refetchSave) {
             refetchSave()
           }
           setDropdownOpen(false);
@@ -144,7 +141,7 @@ export default function PostCard({ id, content, created_at, photos, profiles: au
         post_id: id,
       }).then(async (result) => {
         setIsSaved(true);
-        if (refetchSav) {
+        if (refetchSave) {
           refetchSave()
         }
         setDropdownOpen(false);

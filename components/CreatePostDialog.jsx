@@ -30,7 +30,7 @@ const CreatePostDialog = ({ children }) => {
     const [Files, setFiles] = useState([]);
     const supabase = useSupabaseClient();
     const session = useSession();
-    const { profile } = useContext(UserContext);
+    const { profile, audioRef } = useContext(UserContext);
     const client = useQueryClient()
     const btnRef = useRef(null)
 
@@ -123,7 +123,7 @@ const CreatePostDialog = ({ children }) => {
 
     return (
         <AlertDialog>
-            <AlertDialogTrigger asChild>
+            <AlertDialogTrigger  asChild>
                 {children}
             </AlertDialogTrigger>
             <AlertDialogContent className='w-[500px]'>

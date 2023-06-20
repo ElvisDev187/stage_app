@@ -5,6 +5,7 @@ import { useSupabaseClient } from '@supabase/auth-helpers-react';
 import { useQuery } from '@tanstack/react-query';
 import ReactTimeAgo from "react-time-ago";
 import { ShimmerThumbnail } from 'react-shimmer-effects';
+import Link from 'next/link';
 export default function RecentOrders({ recent, isLoading, isError, }) {
 
   if (isError) {
@@ -15,7 +16,7 @@ export default function RecentOrders({ recent, isLoading, isError, }) {
 
     <div className='w-full col-span-1 relative  m-auto p-4 border rounded-lg bg-white '>
       <h1 className='font-bold text-gray-900' >Recent report - 12 Hours</h1>
-      <ul className='overflow-scroll lg:h-[70vh] h-[50vh] px-3'>
+      <ul className='overflow-y-scroll lg:h-[70vh] h-[45vh] px-3'>
         {
           isLoading ?
             <div className='mt-5'>
@@ -25,12 +26,13 @@ export default function RecentOrders({ recent, isLoading, isError, }) {
             :
             
               recent.map((report) => (
-                <li
+                <Link
+                  href={`/admin/post/${report.posts.id}`}
                   key={report.id}
-                  className='bg-gray-50 hover:bg-gray-100 rounded-lg my-3 p-2 flex items-center cursor-pointer'
+                  className='bg-gray-50 hover:bg-gray-100 rounded-lg my-3 p-2 flex items-center cursor-pointer relative'
                 >
-                  <div className='bg-purple-100 rounded-lg p-3'>
-                    <GrTasks className='text-purple-800' />
+                  <div className='bg-emerald-100 rounded-lg p-3'>
+                    <GrTasks className='text-emerald-500' />
                   </div>
                   <div className='pl-4'>
                     <p className='text-gray-800 font-bold'>{report.profiles.name}</p>
@@ -40,7 +42,7 @@ export default function RecentOrders({ recent, isLoading, isError, }) {
                   <span className="lg:flex md:hidden absolute right-6 text-sm font-bold text-gray-400">
                     <ReactTimeAgo timeStyle={'twitter'} date={(new Date(report.created_at)).getTime()} />
                   </span>
-                </li>
+                </Link>
               ))
             
         }

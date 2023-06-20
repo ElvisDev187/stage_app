@@ -7,14 +7,12 @@ import { useContext } from "react";
 import { UserContext } from "../contexts/UserContext";
 import { useInfiniteQuery} from "@tanstack/react-query";
 import ReactTimeAgo from "react-time-ago";
-import useSound from "use-sound";
-import Sound from '../public/audio/sound1.mp3'
 
 export default function NotificationsPage() {
 
-  const { profile, setNotif } = useContext(UserContext)
+  const { profile, setNotif, audioRef } = useContext(UserContext)
   const supabase = useSupabaseClient()
-  const [play] = useSound('/audio/sound1.mp3',{ volume: 1})
+
   
   const notificationsChannel = supabase.channel('custom-insert-channel')
     .on(
@@ -23,7 +21,7 @@ export default function NotificationsPage() {
       async (payload) => {
         if(payload.new?.author == profile?.id){
          
-          refetch().then(()=>  play())
+          refetch().then(()=> audioRef?.current?.play())
         }
 
       }
