@@ -1,11 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { RxSketchLogo, RxDashboard, RxPerson } from 'react-icons/rx';
-import { IoWarning } from 'react-icons/io5';
-import { FaUsersSlash } from 'react-icons/fa';
-import { LuShieldAlert } from 'react-icons/lu';
-
+import { UserPlus2,  AlertTriangle, ShieldAlert,LayoutGrid, Lock } from 'lucide-react';
 export default function Sidebar({ children }){
   return (
     <div className='flex'>
@@ -19,22 +15,27 @@ export default function Sidebar({ children }){
           <span className='border-b-[1px] border-gray-200 w-full p-2'></span>
           <Link href='/admin'>
             <div className='bg-gray-100 hover:bg-gray-200 cursor-pointer my-4 p-3 rounded-lg inline-block'>
-              <RxDashboard size={20} />
+              <LayoutGrid className="h-6 w-6" />
             </div>
           </Link>
           <Link href='/admin/customers'>
             <div className='bg-gray-100 hover:bg-gray-200 cursor-pointer my-4 p-3 rounded-lg inline-block'>
-              <IoWarning size={20} />
+            <AlertTriangle className="h-6 w-6"/>
             </div>
           </Link>
           <Link href='/admin/orders'>
             <div className='bg-gray-100 hover:bg-gray-200 cursor-pointer my-4 p-3 rounded-lg inline-block'>
-              <LuShieldAlert size={20} />
+              <ShieldAlert className="h-6 w-6" />
             </div>
           </Link>
           <Link href='/admin/users/block'>
             <div className='bg-gray-100 hover:bg-gray-200 cursor-pointer my-4 p-3 rounded-lg inline-block'>
-              <FaUsersSlash size={26} />
+              <Lock className="h-6 w-6" />
+            </div>
+          </Link>
+          <Link href='/admin/users/new'>
+            <div className='bg-gray-100 hover:bg-gray-200 cursor-pointer my-4 p-3 rounded-lg inline-block'>
+              <UserPlus2  className="h-6 w-6" />
             </div>
           </Link>
         </div>

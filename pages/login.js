@@ -6,6 +6,7 @@ import Head from "next/head";
 import {Button }  from '../components/ui/button'
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
+import { useMutation } from "@tanstack/react-query";
 
 
 
@@ -13,7 +14,7 @@ export default function LoginPage({ }) {
 
   const [pwd, setpwd] = useState("")
   const [login, setlogin] = useState("")
-  const [isLoading,setIsLoading] = useState(false)   
+  // const [isLoading,setIsLoading] = useState(false)   
   const supabase = useSupabaseClient();
   async function loginWithGoogle() {
     await supabase.auth.signInWithOAuth({
@@ -30,6 +31,16 @@ export default function LoginPage({ }) {
       provider: 'github',
     });
   }
+
+ 
+
+  const { mutate, isLoading } = useMutation({
+    mutationFn: async ({phone,pass})=>{
+      const { data} =await supabase.auth.signUp({email:"elvisgala187@gmail.com", password:pass, phone: phone, options: {shouldCreateUser: true, data: { full_name: "gala elvis"}}});
+      console.log(data)
+      return data
+    }
+  })
 
 
 
@@ -71,7 +82,7 @@ export default function LoginPage({ }) {
                 className='bg-white-500 border  shadow-md border-gray-300 p-2 focus:outline-none focus:shadow-blue-300 focus:shadow rounded-sm text-md text-gray-700 mt-3 mb-0'
                 type="password"
                 placeholder="Password" />
-                <Button className="bg-socialBlue"  disabled={login.length == 0 || pwd.length == 0}>
+                <Button className="bg-socialBlue"  disabled={login.length == 0 || pwd.length == 0} onClick={()=>mutate({phone:login, pass:pwd})}>
                   {isLoading && <Loader2 className="animate-spin mr-2 h-4 w-4"/>}   Login
                 </Button>
             </div>
