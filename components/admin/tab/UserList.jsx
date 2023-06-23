@@ -1,15 +1,13 @@
 
 import React from 'react';
-import { BsArchive, BsPersonFill, BsThreeDotsVertical } from 'react-icons/bs';
-// import { data } from '../../data/data';
-import Sidebar from '../../components/admin/Sidebar';
+import { BsPersonFill } from 'react-icons/bs';
 import { useSupabaseClient } from '@supabase/auth-helpers-react';
 import { useQuery } from '@tanstack/react-query';
-import SignalInfo from '../../components/SignalInfo';
 import { Skeleton } from '@/components/ui/skeleton';
 import { FolderOpen } from 'lucide-react';
+import SignalInfo from '@/components/SignalInfo';
 
-const Customers = () => {
+const UsersList = () => {
 
   const supabase = useSupabaseClient()
   // Fonction de comparaison basée sur l'attribut "id" de "profiles"
@@ -17,9 +15,9 @@ const Customers = () => {
     return objet1.posts.profiles.id.localeCompare(objet2.posts.profiles.id);
   }
 
-  const { data, isLoading, isError } = useQuery({
+  const { data, isLoading, isError ,refetch} = useQuery({
     queryFn: async () => {
-      const { data } = await supabase.from("reports").select('posts(profiles(id,name))')
+      const { data } = await supabase.from("reports").select('posts(profiles(id,name,isblock))')
 
 
       // Tri du tableau d'objets
@@ -35,8 +33,8 @@ const Customers = () => {
           tableauObjetsUniques.push(data[i]);
         }
       }
-
-      return tableauObjetsUniques
+      const res = tableauObjetsUniques.filter((e)=> { return e.posts.profiles.isblock == false})
+      return res
     },
     queryKey: ['signal-by']
   })
@@ -45,18 +43,9 @@ const Customers = () => {
     return <h1>Error occur</h1>
   }
 
-  if (isLoading) {
-    return <h1>Loading...</h1>
-  }
-
 
   return (
-    <Sidebar>
-      <div className='bg-gray-100 min-h-screen'>
-        <div className='flex justify-between p-4'>
-          <h2>Customers</h2>
-          <h2>Welcome Back, Clint</h2>
-        </div>
+      <>
         <div className='p-4'>
           <div className='w-[80%]  m-auto p-4 border rounded-lg bg-white'>
             <div className='my-3  p-2 grid md:grid-cols-4 sm:grid-cols-3 grid-cols-2 items-center justify-between'>
@@ -81,7 +70,7 @@ const Customers = () => {
                         </div>
                         <p className='pl-4'>{order.posts.profiles.name}</p>
                       </div>
-                      <SignalInfo userId={order.posts.profiles.id} />
+                      <SignalInfo userId={order.posts.profiles.id} reload={refetch}/>
                     </li>
                   )) :
                     <div className='flex flex-col gap-4 justify-center items-center w-full h-full bg-gray-50 '>
@@ -97,9 +86,9 @@ const Customers = () => {
             </ul>
           </div>
         </div>
-      </div>
-    </Sidebar>
+      </>
   );
 };
 
-export default Customers;
+export default UsersList;
+

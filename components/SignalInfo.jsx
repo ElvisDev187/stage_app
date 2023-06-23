@@ -1,19 +1,19 @@
 import { useSupabaseClient } from '@supabase/auth-helpers-react'
-import { useMutation, useQueries, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { AlertOctagon, Loader2, Lock } from 'lucide-react'
 import React from 'react'
 import { SiMinutemailer } from 'react-icons/si'
 import ReactTimeAgo from 'react-time-ago'
 import { Button } from './ui/button'
 import { useToast } from '@/hooks/use-toast'
-import { useRouter } from 'next/navigation'
+import { useRouter } from 'next/router'
 
-function SignalInfo({ userId }) {
+function SignalInfo({ userId , reload}) {
     const supabase = useSupabaseClient()
     const { toast } = useToast()
-    const router = useRouter()
-  
-    const { data, isLoading, isError, refetch } = useQuery({
+    const client = useQueryClient()
+
+    const { data: info, isLoading, isError, refetch } = useQuery({
         queryFn: async () => {
             const { data } = await supabase.from("warnings")
                 .select('created_at, profiles(name)')
@@ -26,33 +26,30 @@ function SignalInfo({ userId }) {
         queryKey: ['report-info', userId]
     })
 
-    const { mutate: MakeWarn, isLoading: isWarn } = useMutation({
-        mutationFn: async ({ user, admin }) => {
+    const { mutate: MakeWarn, isLoading: isWarn } = useMutation(
+        async ({ user, admin }) => {
             const { data } = await supabase
                 .from("warnings")
                 .insert({
                     user: user,
                     admin: admin
-                })
-
+                }).select('*')
+               
             return data
-        }
-    },
-
+        },
         {
             onError: (error) => {
-                toast({
+                return toast({
                     title: "Something went wrong..",
                     description: 'Could not sent warning to user, please retry later',
                     variant: 'destructive'
                 })
             },
-            onSuccess: async () => {
-               startTransition(()=>{
-                router.refresh()
-               })
-               toast({
-                    description: `Sucessfull send warning to ${data[0].profiles.name}`,
+            onSuccess: async (data) => {
+               await supabase.from("notifications").insert({author: userId, type: "warning"})
+                refetch()
+                return toast({
+                    description: `Sucessfull send warning to ${info[0].profiles.name}`,
                     variant: 'default'
                 })
             },
@@ -60,19 +57,32 @@ function SignalInfo({ userId }) {
 
     )
 
-    const { mutate: Block, isLoading: isBlock } = useMutation({
-        mutationFn: async ({ user }) => {
+    const { mutate: Block, isLoading: isBlock } = useMutation(
+     async ({ user }) => {
+            const date = new Date()
+            var year = date.getFullYear();
+            var month = ('0' + (date.getMonth() + 1)).slice(-2); // Les mois commencent à partir de 0
+            var day = ('0' + date.getDate()).slice(-2);
+            var hours = ('0' + date.getHours()).slice(-2);
+            var minutes = ('0' + date.getMinutes()).slice(-2);
+            var seconds = ('0' + date.getSeconds()).slice(-2);
+            var milliseconds = ('00' + date.getMilliseconds()).slice(-3);
+
+            // Création du timestamp dans le format souhaité
+            var timestamp = year + '-' + month + '-' + day + ' ' + hours + ':' + minutes + ':' + seconds + '.' + milliseconds + '+00';
+
             const { data } = await supabase
                 .from("profiles")
                 .update({
                     isblock: true,
-                    bloc_at: Date.now()
+                    bloc_at: timestamp
                 })
                 .eq('id', user)
+                .select('*')
+
 
             return data
-        }
-    },
+        },
 
         {
             onError: (error) => {
@@ -82,9 +92,10 @@ function SignalInfo({ userId }) {
                     variant: 'destructive'
                 })
             },
-            onSuccess: () => {
+            onSuccess: (data) => {
+                reload()
                 return toast({
-                    description: `Sucessfull User Account of ${data[0].profiles.name}`,
+                    description: `Sucessfull User Account of ${info[0].profiles.name}`,
                     variant: 'default'
                 })
             },
@@ -105,10 +116,10 @@ function SignalInfo({ userId }) {
     }
     return (
         <>
-            <p className='text-gray-600 sm:text-left text-right'>{data.length}</p>
+            <p className='text-gray-600 sm:text-left text-right'>{info?.length}</p>
             <p className='hidden md:flex'>
-                {data.length > 0 ?
-                    <ReactTimeAgo date={(new Date(data[0].created_at)).getTime()} /> : 0
+                {info.length > 0 ?
+                    <ReactTimeAgo date={(new Date(info[0].created_at)).getTime()} /> : 0
                 }
             </p>
             <div className='flex w-full'>
@@ -120,7 +131,7 @@ function SignalInfo({ userId }) {
                         <AlertOctagon size={20} className='cursor-pointer text-white' />
                     }
                 </Button>
-                <Button onClick={() => Block({ user: userId })} variant='default' disabled={data.length < 3 || isBlock} className='sm:flex hidden hover:bg-red-600 font-black justify-center gap-5 items-center w-1/4 '>
+                <Button onClick={() => Block({ user: userId })} variant='default' disabled={info.length < 3 || isBlock} className='sm:flex hidden hover:bg-red-600 font-black justify-center gap-5 items-center w-1/4 '>
 
                     {isBlock ? <Loader2 className="animate-spin h-6 w-6" />
 

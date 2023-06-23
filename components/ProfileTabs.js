@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+
 export default function ProfileTabs({userId,active}) {
   const tabClasses = 'flex gap-1 px-4 py-1 items-center border-b-4 border-b-white';
   const activeTabClasses = 'flex gap-1 px-4 py-1 items-center border-socialBlue border-b-4 text-socialBlue font-bold';
