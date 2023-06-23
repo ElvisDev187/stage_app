@@ -1,5 +1,8 @@
 import {createContext, useEffect, useRef, useState} from "react";
 import {useSession, useSupabaseClient} from "@supabase/auth-helpers-react";
+import { useToast } from "@/hooks/use-toast";
+import { ToastAction } from "@/components/ui/toast";
+import { useRouter } from "next/router";
 
 export const UserContext = createContext({});
 
@@ -9,6 +12,8 @@ export function UserContextProvider({children}) {
   const [profile,setProfile] = useState(null);
   const [notifNumber,setNotif] = useState(0);
   const audioRef = useRef(null)
+ const router = useRouter()
+  const { toast } = useToast()
   useEffect(() => {
     if (!session?.user?.id) {
       return;
@@ -34,8 +39,17 @@ export function UserContextProvider({children}) {
         async (payload) => {
 
           if(payload.new?.author == profile?.id){
-         
-               audioRef?.current?.play()
+           console.log(payload.new)
+
+               if (payload.new?.type == "warning") {
+                toast({
+                  title: "Uh oh! Something went wrong.",
+                  description: "There was a problem with your request.",
+                  action: <ToastAction onClick={()=> router.push('/notifications')} altText="Try again">See notification</ToastAction>,
+                  duration: 5000,
+                  variant: "destructive"
+                })
+               }
           }
       
           supabase.from('notifications')
@@ -43,6 +57,7 @@ export function UserContextProvider({children}) {
           .eq('author', session?.user?.id)
           .eq('isRead', false)
           .then(result => {
+            audioRef?.current?.play()
             setNotif(prev=>result.data?.length);
     
           });

@@ -1,12 +1,9 @@
 import React from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
-import { RxSketchLogo, RxDashboard, RxPerson } from 'react-icons/rx';
-import { IoWarning } from 'react-icons/io5';
-import { FaUsersSlash } from 'react-icons/fa';
-import { LuShieldAlert } from 'react-icons/lu';
-
-export default function Sidebar({ children }){
+import { RxSketchLogo} from 'react-icons/rx';
+import { UserPlus2,  AlertTriangle, ShieldAlert,LayoutGrid, Lock } from 'lucide-react';
+import Header from './Header';
+export default function Sidebar({ children , active}){
   return (
     <div className='flex'>
       <div className='fixed  h-screen p-4 bg-white border-r-[1px] flex flex-col justify-between'>
@@ -18,28 +15,36 @@ export default function Sidebar({ children }){
           
           <span className='border-b-[1px] border-gray-200 w-full p-2'></span>
           <Link href='/admin'>
-            <div className='bg-gray-100 hover:bg-gray-200 cursor-pointer my-4 p-3 rounded-lg inline-block'>
-              <RxDashboard size={20} />
+            <div className={`  cursor-pointer my-4 p-3 rounded-lg inline-block ${active == "home"? "bg-socialBlue text-white": "bg-gray-100 text-zinc-800 hover:bg-blue-200 hover:scale-110"}`}>
+              <LayoutGrid className="h-6 w-6" />
             </div>
           </Link>
-          <Link href='/admin/customers'>
-            <div className='bg-gray-100 hover:bg-gray-200 cursor-pointer my-4 p-3 rounded-lg inline-block'>
-              <IoWarning size={20} />
+          <Link href='/admin/users'>
+            <div className={`  cursor-pointer my-4 p-3 rounded-lg inline-block ${active == "users"? "bg-socialBlue text-white": "bg-gray-100 text-zinc-800 hover:bg-blue-200 hover:scale-110"}`}>
+            <AlertTriangle className="h-6 w-6"/>
             </div>
           </Link>
-          <Link href='/admin/orders'>
-            <div className='bg-gray-100 hover:bg-gray-200 cursor-pointer my-4 p-3 rounded-lg inline-block'>
-              <LuShieldAlert size={20} />
+          <Link href='/admin/reports'>
+            <div className={`  cursor-pointer my-4 p-3 rounded-lg inline-block ${active == "reports"? "bg-socialBlue text-white": "bg-gray-100 text-zinc-800 hover:bg-blue-200 hover:scale-110"}`}>
+              <ShieldAlert className="h-6 w-6" />
             </div>
           </Link>
-          <Link href='/admin/users/block'>
-            <div className='bg-gray-100 hover:bg-gray-200 cursor-pointer my-4 p-3 rounded-lg inline-block'>
-              <FaUsersSlash size={26} />
+          <Link href='/admin/block'>
+            <div className={`  cursor-pointer my-4 p-3 rounded-lg inline-block ${active == "block"? "bg-socialBlue text-white": "bg-gray-100 text-zinc-800 hover:bg-blue-200 hover:scale-110"}`}>
+              <Lock className="h-6 w-6" />
+            </div>
+          </Link>
+          <Link href='/admin/new'>
+            <div className={`  cursor-pointer my-4 p-3 rounded-lg inline-block ${active == "new"? "bg-socialBlue text-white": "bg-gray-100 text-zinc-800 hover:bg-blue-200 hover:scale-110"}`}>
+              <UserPlus2  className="h-6 w-6" />
             </div>
           </Link>
         </div>
       </div>
-      <main className='ml-20 w-full'>{children}</main>
+      <main className='ml-20 w-full bg-gray-100 min-h-screen'>
+        <Header />
+        {children}
+      </main>
     </div>
   );
 };
