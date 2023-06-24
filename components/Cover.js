@@ -2,8 +2,8 @@ import {useSession, useSupabaseClient} from "@supabase/auth-helpers-react";
 import {useState} from "react";
 import Preloader from "./Preloader";
 import {uploadUserProfileImage} from "../helpers/user";
-import Image from "next/image";
 import { LazyLoadImage } from "react-lazy-load-image-component";
+import { Image } from "lucide-react";
 
 export default function Cover({url,editable,onChange}) {
   const supabase = useSupabaseClient();
@@ -22,7 +22,7 @@ export default function Cover({url,editable,onChange}) {
   return (
     <div className="h-36 overflow-hidden flex justify-center items-center relative">
       <div>
-      <LazyLoadImage effect="blur" src={url} alt="photoPost" className="w-full h-ull object-fill" />
+      {url != null? <LazyLoadImage effect="blur" src={url} alt="photoPost" className="w-full h-ull object-fill" />: <Image className="w-[230px] h-[150px] text-zinc-400" alt="pouff"/>}
         {/* <Image fill  placeholder="blur" blurDataURL="/white.jpg" quality={100} loading="lazy"  src={url} alt=""/> */}
       </div>
       {isUploading && (

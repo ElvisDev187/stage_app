@@ -1,9 +1,17 @@
 import React from 'react';
 import Link from 'next/link';
 import { RxSketchLogo} from 'react-icons/rx';
-import { UserPlus2,  AlertTriangle, ShieldAlert,LayoutGrid, Lock } from 'lucide-react';
+import { UserPlus2,  AlertTriangle, ShieldAlert,LayoutGrid, Lock, LogOut } from 'lucide-react';
 import Header from './Header';
+import { useRouter } from 'next/router';
+import { useSupabaseClient } from '@supabase/auth-helpers-react';
 export default function Sidebar({ children , active}){
+  const supabase = useSupabaseClient();
+  const router = useRouter()
+  async function logout() {
+    await supabase.auth.signOut();
+    router.push('/login')
+  }
   return (
     <div className='flex'>
       <div className='fixed  h-screen p-4 bg-white border-r-[1px] flex flex-col justify-between'>
@@ -24,11 +32,11 @@ export default function Sidebar({ children , active}){
             <AlertTriangle className="h-6 w-6"/>
             </div>
           </Link>
-          <Link href='/admin/reports'>
+          {/* <Link href='/admin/reports'>
             <div className={`  cursor-pointer my-4 p-3 rounded-lg inline-block ${active == "reports"? "bg-socialBlue text-white": "bg-gray-100 text-zinc-800 hover:bg-blue-200 hover:scale-110"}`}>
               <ShieldAlert className="h-6 w-6" />
             </div>
-          </Link>
+          </Link> */}
           <Link href='/admin/block'>
             <div className={`  cursor-pointer my-4 p-3 rounded-lg inline-block ${active == "block"? "bg-socialBlue text-white": "bg-gray-100 text-zinc-800 hover:bg-blue-200 hover:scale-110"}`}>
               <Lock className="h-6 w-6" />
@@ -39,6 +47,11 @@ export default function Sidebar({ children , active}){
               <UserPlus2  className="h-6 w-6" />
             </div>
           </Link>
+          <>
+            <div onClick={logout} className={`  cursor-pointer my-4 p-3 rounded-lg inline-block  bg-gray-100 text-zinc-800 hover:bg-blue-200`}>
+              <LogOut  className="h-6 w-6" />
+            </div>
+          </>
         </div>
       </div>
       <main className='ml-20 w-full bg-gray-100 min-h-screen'>

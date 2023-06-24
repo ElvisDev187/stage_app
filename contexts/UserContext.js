@@ -3,6 +3,7 @@ import {useSession, useSupabaseClient} from "@supabase/auth-helpers-react";
 import { useToast } from "@/hooks/use-toast";
 import { ToastAction } from "@/components/ui/toast";
 import { useRouter } from "next/router";
+import { buttonVariants } from "@/components/ui/button";
 
 export const UserContext = createContext({});
 
@@ -43,9 +44,9 @@ export function UserContextProvider({children}) {
 
                if (payload.new?.type == "warning") {
                 toast({
-                  title: "Uh oh! Something went wrong.",
-                  description: "There was a problem with your request.",
-                  action: <ToastAction onClick={()=> router.push('/notifications')} altText="Try again">See notification</ToastAction>,
+                  title: "Important",
+                  description: "You receive a warning.",
+                  action: <ToastAction className={buttonVariants({variant: "default"})} onClick={()=> router.push('/notifications')} altText="Try again">See notification</ToastAction>,
                   duration: 5000,
                   variant: "destructive"
                 })

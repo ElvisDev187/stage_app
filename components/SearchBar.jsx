@@ -70,24 +70,24 @@ const SearchBar= ({}) => {
         }}
         value={input}
         className='outline-none border-none focus:border-none focus:outline-none ring-0'
-        placeholder='Search communities...'
+        placeholder='Search users...'
       />
 
       {input.length > 0 && (
         <CommandList className='absolute bg-white top-full inset-x-0 shadow rounded-b-md'>
           {isFetched && <CommandEmpty>No results found.</CommandEmpty>}
           {(queryResults?.length ?? 0) > 0 ? (
-            <CommandGroup heading='Communities'>
+            <CommandGroup heading='users'>
               {queryResults?.map((user) => (
                 <CommandItem
                   onSelect={(e) => {
-                    router.push(`/profile/${user.id}`)
-                    router.refresh()
+                    // router.push(`/profile/${user.id}`)
+                    // router.refresh()
                   }}
                   key={user.id}
                   value={user.name}>
                   <Users className='mr-2 h-4 w-4' />
-                  <a href={`/profile/${user.id}`}>u/{user.name}</a>
+                  <span>{user.name}</span>
                 </CommandItem>
               ))}
             </CommandGroup>

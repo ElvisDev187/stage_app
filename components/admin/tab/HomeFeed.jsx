@@ -3,10 +3,11 @@ import { useSupabaseClient } from '@supabase/auth-helpers-react';
 import { useQuery } from '@tanstack/react-query';
 import BarChart from '../BarChart';
 import RecentOrders from '../RecentOrders';
+import Head from 'next/head';
 
 function HomeFeed() {
-    const supabase = useSupabaseClient()
-  const fectReport = async() => {
+  const supabase = useSupabaseClient()
+  const fectReport = async () => {
     return supabase.from("reports")
       .select('id, created_at, posts(id,profiles(name)), profiles(*)')
       .eq("isread", false)
@@ -61,14 +62,16 @@ function HomeFeed() {
 
     return groups;
   }, {});
-  
+
   return (
     <>
-
+      <Head>
+        <title>EcoShip | Admin | Overview</title>
+      </Head>
       <div className='p-4 grid md:grid-cols-3 grid-cols-1 items-end gap-4'>
-          <BarChart data={dataChart} isLoading={isLoading}/>
-          <RecentOrders recent={reports} isLoading={isLoading} isError={isError} />
-        </div>
+        <BarChart data={dataChart} isLoading={isLoading} />
+        <RecentOrders recent={reports} isLoading={isLoading} isError={isError} />
+      </div>
     </>
   )
 }

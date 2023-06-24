@@ -31,9 +31,24 @@ const middleware = async (request) => {
       },
     });
   }
-  if (request.url == "http://localhost:3000/login" && user) {
+  if (request.url == `${process.env.NextURL}/login` && user) {
+    if(user.user.email == "admin@gmail.com"){
+      return NextResponse.redirect(`${process.env.NextURL}/admin`);
+    }else{
+      return NextResponse.redirect(`${process.env.NextURL}/`);
+    }
+  }
+
+ if (request.url.includes("admin") && user) {
+  if(user.user.email != "admin@gmail.com"){
     return NextResponse.redirect(`${process.env.NextURL}/`);
   }
+ }
+ if (!request.url.includes("admin") && user) {
+  if(user.user.email == "admin@gmail.com"){
+    return NextResponse.redirect(`${process.env.NextURL}/admin`);
+  }
+ }
 //   // If the JWT is valid, pass the request to the API route or page
   return NextResponse.next();
 };
@@ -41,5 +56,5 @@ const middleware = async (request) => {
 export default middleware;
 
 export const config = {
-  matcher: ["/","/notifications","/profile/:path*","/post/:path*"], // This is the path we want to protect
+  matcher: ["/","/notifications","/profile/:path*","/post/:path*","/saved","/admin/:path*"], // This is the path we want to protect
 };

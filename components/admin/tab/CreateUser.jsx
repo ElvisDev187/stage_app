@@ -4,6 +4,7 @@ import { useToast } from '@/hooks/use-toast'
 import { useSupabaseClient } from '@supabase/auth-helpers-react'
 import { useMutation } from '@tanstack/react-query'
 import { Loader2, UserCircle2 } from 'lucide-react'
+import Head from 'next/head'
 import React, { useState } from 'react'
 
 function CreateUser() {
@@ -61,6 +62,9 @@ function CreateUser() {
     }
     return (
         <div className='px-40 min-h-screen bg-gray-100 flex justify-start items-center flex-col '>
+            <Head>
+                <title>EcoShip | Admin | New User</title>
+            </Head>
             <UserCircle2 className='h-20 w-20 mt-5  text-zinc-600' absoluteStrokeWidth={true} />
             <h1 className=' font-semibold text-2xl md:text-3xl text-zinc-400 mt-5'>Add User</h1>
             <div className='w-1/2 mt-6'>
