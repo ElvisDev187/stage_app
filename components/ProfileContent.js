@@ -9,6 +9,7 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import { useIntersection } from "@mantine/hooks";
 import { ShimmerSocialPost, ShimmerThumbnail } from "react-shimmer-effects";
 import { LazyLoadImage } from "react-lazy-load-image-component";
+import { FolderOpen } from "lucide-react";
 export default function ProfileContent({ activeTab, userId }) {
 
   const supabase = useSupabaseClient();
@@ -102,22 +103,33 @@ export default function ProfileContent({ activeTab, userId }) {
         status === "success" ?
           <div className="max-h-[60vh] overflow-y-scroll overflow-x-hidden">
             {
-              posts?.map((post, i) => {
-                if (i === posts.length - 1) {
-                  return (
-                    <div key={post.id} ref={postref}>
-                      <PostCard {...post} />
-                    </div>
-                  )
-                } else {
-                  return (
-                    <div key={post.id}>
-                      <PostCard {...post} />
-                    </div>
-                  )
-                }
+              posts && posts.length > 0 ?
+                <>
+                  {posts?.map((post, i) => {
+                    if (i === posts.length - 1) {
+                      return (
+                        <div key={post.id} ref={postref}>
+                          <PostCard {...post} />
+                        </div>
+                      )
+                    } else {
+                      return (
+                        <div key={post.id}>
+                          <PostCard {...post} />
+                        </div>
+                      )
+                    }
 
-              })
+                  })}
+                </>
+
+                :
+                <>
+                  <div className='flex flex-col gap-4 justify-center items-center w-full h-full bg-gray-50 '>
+                    <FolderOpen className='w-14 h-14 text-zinc-400 mt-8' />
+                    <h2 className='font-bold text-2xl text-zinc-600 mb-8'>No have not post something yet...</h2>
+                  </div>
+                </>
             }
           </div>
           :
@@ -137,42 +149,12 @@ export default function ProfileContent({ activeTab, userId }) {
           </Card>
         </div>
       )}
-      {activeTab === 'friends' && (
-        <div>
-          <Card>
-            <h2 className="text-3xl mb-2">Friends</h2>
-            <div className="">
-              <div className="border-b border-b-gray-100 p-4 -mx-4">
-                <FriendInfo />
-              </div>
-              <div className="border-b border-b-gray-100 p-4 -mx-4">
-                <FriendInfo />
-              </div>
-              <div className="border-b border-b-gray-100 p-4 -mx-4">
-                <FriendInfo />
-              </div>
-              <div className="border-b border-b-gray-100 p-4 -mx-4">
-                <FriendInfo />
-              </div>
-              <div className="border-b border-b-gray-100 p-4 -mx-4">
-                <FriendInfo />
-              </div>
-              <div className="border-b border-b-gray-100 p-4 -mx-4">
-                <FriendInfo />
-              </div>
-              <div className="border-b border-b-gray-100 p-4 -mx-4">
-                <FriendInfo />
-              </div>
-            </div>
-          </Card>
-        </div>
-      )}
       {activeTab === 'photos' && (
         <div>
           <Card>
             <div className="grid md:grid-cols-2 gap-4 max-h-[60vh] overflow-y-scroll overflow-x-hidden">
               {
-                photoStatus === "success" && postPhotos ?
+                photoStatus === "success" && postPhotos.length > 0 ?
                   postPhotos.map((post, i) => {
 
                     if (post.photos.length < 2) {
@@ -206,10 +188,26 @@ export default function ProfileContent({ activeTab, userId }) {
                   })
                   :
                   <>
-                    <ShimmerThumbnail rounded={true} />
-                    <ShimmerThumbnail rounded={true} />
-                    <ShimmerThumbnail rounded={true} />
-                    <ShimmerThumbnail rounded={true} />
+                    {photoStatus == "loading" ?
+
+                      <>
+                        <ShimmerThumbnail rounded={true} />
+                        <ShimmerThumbnail rounded={true} />
+                        <ShimmerThumbnail rounded={true} />
+                        <ShimmerThumbnail rounded={true} />
+                      </>
+                      :
+                      <>
+                        {photoStatus === "success" && postPhotos.length == 0 ?
+                          <>
+                            <div className='flex flex-col gap-4 justify-center items-center w-full h-full bg-gray-50 '>
+                              <FolderOpen className='w-14 h-14 text-zinc-400 mt-8' />
+                              <h2 className='font-bold text-2xl text-zinc-600 mb-8'>No dont have photo yet..</h2>
+                            </div>
+                          </> : null}
+                      </>
+                    }
+
                   </>
               }
             </div>

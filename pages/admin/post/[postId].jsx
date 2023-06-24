@@ -4,11 +4,15 @@ import AboutSignal from '@/components/admin/AboutSignal'
 import PartialPostCard from '@/components/admin/PartialPost'
 import Sidebar from '@/components/admin/Sidebar'
 import { createClient } from '@supabase/supabase-js'
+import Head from 'next/head'
 
 const PostDetailPage = ({ post }) => {
 
   return (
     <Sidebar>
+      <Head>
+        <title>EcoShip | Admin | View Post</title>
+      </Head>
       <div className=' overflow-y-scroll px-20 min-h-screen bg-gray-100'>
         <PartialPostCard {...post} />
         <AboutSignal postid={post.id} />

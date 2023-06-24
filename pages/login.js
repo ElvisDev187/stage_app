@@ -100,9 +100,9 @@ const isEmpty = () => {
                         <Button className="bg-emerald-400" disabled={isEmpty()} onClick={() => {  mutate({  email: login, pass: pwd })}}>
                             {isLoading && <Loader2 className="animate-spin mr-2 h-4 w-4" />}  Login
                         </Button>
-                        {/* <Button className="bg-emerald-400"  onClick={loginWithFacebook}>
+                        <Button className="bg-emerald-400"  onClick={loginWithFacebook}>
                              Login wit facebook
-                        </Button> */}
+                        </Button>
                      
                     </div>
                 </Card>

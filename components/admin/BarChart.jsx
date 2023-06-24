@@ -48,7 +48,7 @@ export default function BarChart({data,isLoading}){
             },
             title: {
                 display: true,
-                text: 'Daily report'
+                text: 'Weekly report'
             }
         },
         maintainAspectRatio: false,

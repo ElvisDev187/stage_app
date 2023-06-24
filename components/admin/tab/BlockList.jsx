@@ -8,6 +8,7 @@ import { FolderOpen, Loader2, Unlock } from 'lucide-react';
 import Avatar from '@/components/Avatar';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
+import Head from 'next/head';
 
 
 const BlockList = () => {
@@ -65,6 +66,9 @@ const BlockList = () => {
     }
     return (
         <>
+            <Head>
+                <title>EcoShip | Admin | BlockList</title>
+            </Head>
             <div className='p-4'>
                 <div className='w-[80%]  m-auto p-4 border rounded-lg bg-white'>
                     <div className='my-3  p-2 grid md:grid-cols-4 sm:grid-cols-3 grid-cols-2 items-center justify-between'>
@@ -89,12 +93,12 @@ const BlockList = () => {
                                                 <p className='pl-4'>{user.name}</p>
                                             </div>
                                             <p className='hidden md:flex'> <ReactTimeAgo date={(new Date(user.bloc_at)).getTime()} /></p>
-                                            <Button className='sm:flex hidden font-black justify-center gap-5 items-center w-1/4 ' disabled={isUnlocking} onClick={()=> UnLock({user: user.id})}>
+                                            <Button className='sm:flex hidden font-black justify-center gap-5 items-center w-1/4 ' disabled={isUnlocking} onClick={() => UnLock({ user: user.id })}>
                                                 {isUnlocking ? <Loader2 className="animate-spin h-6 w-6" />
 
                                                     :
-                                                    
-                                                <Unlock />
+
+                                                    <Unlock />
                                                 }
 
                                             </Button>

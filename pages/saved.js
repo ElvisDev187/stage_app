@@ -7,6 +7,8 @@ import { UserContext } from "../contexts/UserContext";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { ShimmerSocialPost } from "react-shimmer-effects";
 import { useIntersection } from "@mantine/hooks";
+import Head from "next/head";
+import { BookmarkMinus } from "lucide-react";
 
 export default function SavedPostsPage() {
 
@@ -56,6 +58,9 @@ export default function SavedPostsPage() {
   const posts = data?.pages.flatMap((page) => page)
   return (
     <Layout hideNavigation={false}>
+        <Head>
+        <title>EcoShip | Favorite</title>
+      </Head>
       <h1 className="text-6xl mb-4 text-gray-300">Saved posts</h1>
       {
         (isLoading) ?
@@ -83,9 +88,10 @@ export default function SavedPostsPage() {
             })}
 
             {!(posts.length > 0 && posts != null)&&(
-              <div>
-                <h2>No posts saved</h2>
-              </div>
+              <div className='flex flex-col gap-4 justify-center items-center w-full h-full bg-gray-50 '>
+              <BookmarkMinus className='w-14 h-14 text-zinc-400 mt-8' />
+              <h2 className='font-bold text-2xl text-zinc-600 mb-8'>You dont have saved posts</h2>
+            </div>
             )}
           </div>
       }

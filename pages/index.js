@@ -7,6 +7,7 @@ import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
 import { useIntersection, useScrollIntoView } from "@mantine/hooks";
 import Layout from "../components/Layout";
 import { ShimmerSocialPost } from "react-shimmer-effects";
+import Head from "next/head";
 
 
 export default function Home() {
@@ -66,7 +67,9 @@ export default function Home() {
 
   return (
     <Layout hideNavigation={false} back={false}>
-
+        <Head>
+        <title>EcoShip | Home</title>
+      </Head>
       {/* <PostFormCard onPost={afterPost} /> */}
 
       <div className="max-h-[100vh] overflow-y-scroll">

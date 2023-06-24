@@ -4,11 +4,15 @@ import Layout from '../../components/Layout'
 import PostCard from '../../components/PostCard'
 import { useSupabaseClient } from '@supabase/auth-helpers-react'
 import { createClient } from '@supabase/supabase-js'
+import Head from 'next/head'
 
 const PostDetailPage = ({post}) => {
 
   return ( 
     <Layout hideNavigation={true} back={true}>
+        <Head>
+        <title>EcoShip | View Post</title>
+      </Head>
       <PostCard {...post}/>
     </Layout>
   )
