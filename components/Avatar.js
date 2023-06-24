@@ -2,9 +2,8 @@ import {uploadUserProfileImage} from "../helpers/user";
 import {useSession, useSupabaseClient} from "@supabase/auth-helpers-react";
 import {useState} from "react";
 import Preloader from "./Preloader";
-import Image from "next/image";
 import { LazyLoadImage } from "react-lazy-load-image-component";
-
+import {UserCircle2} from 'lucide-react'
 export default function Avatar({size,url,editable,onChange}) {
   const supabase = useSupabaseClient();
   const session = useSession();
@@ -28,7 +27,7 @@ export default function Avatar({size,url,editable,onChange}) {
       <div className={`rounded-full overflow-hidden flex justify-center items-center relative ${size? "w-24 h-24 md:h-36 md:w-36": "w-12 h-12"}`}>
         {/* <Image src={url} alt="" fill loading="lazy" placeholder="blur" blurDataURL="/white.jpg" className="w-full h-full"/> */}
     
-        {url != null? <LazyLoadImage effect="blur" src={url} alt="photoPost" className="w-full h-ull" />: <Image className="w-[230px] h-[150px] text-zinc-400" alt="pouff"/>}
+        {url != null? <LazyLoadImage effect="blur" src={url} alt="photoPost" className="w-full h-ull" />: <UserCircle2 className="w-8 h-8 text-zinc-500"/>}
       </div>
       {isUploading && (
         <div className="absolute inset-0 flex items-center bg-white bg-opacity-50 rounded-full">

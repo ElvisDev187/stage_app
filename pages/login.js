@@ -53,7 +53,11 @@ export default function LoginPage({ }) {
               title: `Wellcome back, ${data?.user?.user_metadata?.full_name}`,
               description: 'You will be redirect in few second..',
           })
-          router.push('/')
+            if(data.user.email == "admin@gmail.com"){
+              router.push('/admin')
+            }else{
+              router.push('/')
+            }
           }
         },
         onSettled: () => {
@@ -79,7 +83,7 @@ const isEmpty = () => {
       </Head>
       <div className='px-20 min-h-fit bg-gray-50 mt-40 py-10 flex justify-start items-center flex-col rounded-lg '>
             <UserCircle2 className='h-20 w-20 mt-5  text-zinc-600' absoluteStrokeWidth={true} />
-            <h1 className=' font-semibold text-2xl md:text-2xl text-zinc-900 mt-5'>Happy to see You Again</h1>
+            <h1 className=' font-semibold text-2xl md:text-2xl text-zinc-900 mt-5'>Welcome,Back</h1>
             <div className='w-1/2 mt-6'>
                 <Card>
                     <div className="flex flex-col gap-3 w-full">
@@ -100,9 +104,9 @@ const isEmpty = () => {
                         <Button className="bg-emerald-400" disabled={isEmpty()} onClick={() => {  mutate({  email: login, pass: pwd })}}>
                             {isLoading && <Loader2 className="animate-spin mr-2 h-4 w-4" />}  Login
                         </Button>
-                        <Button className="bg-emerald-400"  onClick={loginWithFacebook}>
+                        {/* <Button className="bg-emerald-400"  onClick={loginWithFacebook}>
                              Login wit facebook
-                        </Button>
+                        </Button> */}
                      
                     </div>
                 </Card>
